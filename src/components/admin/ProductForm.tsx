@@ -1,0 +1,349 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { toast } from 'sonner'
+import { X, Plus, Loader2 } from 'lucide-react'
+import { createProduct, updateProduct } from '@/lib/actions/products'
+import { uploadFile, validateImageFile } from '@/lib/upload'
+import { Category, Product } from '@/types/database.types'
+import { formatPrice } from '@/lib/utils'
+
+interface Props {
+  categories: Category[]
+  product?: any
+}
+
+export default function ProductForm({ categories, product }: Props) {
+  const router = useRouter()
+  const [pending, startTransition] = useTransition()
+  const [uploadingImage, setUploadingImage] = useState(false)
+
+  const [title, setTitle] = useState(product?.title ?? '')
+  const [description, setDescription] = useState(product?.description ?? '')
+  const [price, setPrice] = useState(product?.price?.toString() ?? '')
+  const [categoryId, setCategoryId] = useState(product?.category_id ?? '')
+  const [images, setImages] = useState<string[]>(product?.product_images ?? [])
+  const [bestSeller, setBestSeller] = useState(product?.best_seller ?? false)
+  const [newArrival, setNewArrival] = useState(product?.new_arrival ?? false)
+  const [featured, setFeatured] = useState(product?.featured ?? false)
+  const [status, setStatus] = useState<'active' | 'inactive'>(product?.status ?? 'active')
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const err = validateImageFile(file)
+    if (err) { toast.error(err); return }
+    setUploadingImage(true)
+    const result = await uploadFile(file, 'products', product?.id)
+    setUploadingImage(false)
+    if ('error' in result) { toast.error(result.error); return }
+    setImages(prev => [...prev, result.url])
+    toast.success('Image added')
+  }
+
+  function validate(): boolean {
+    const errs: Record<string, string> = {}
+    if (!title.trim()) errs.title = 'Title is required'
+    if (!price || isNaN(Number(price)) || Number(price) < 0) errs.price = 'Valid price is required'
+    if (!categoryId) errs.category = 'Category is required'
+    if (images.length === 0) errs.images = 'At least one product image is required'
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!validate()) return
+
+    startTransition(async () => {
+      const payload = {
+        title: title.trim(),
+        slug: title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+        short_description: null,
+        description: description.trim() || undefined,
+        price: Number(price),
+        category_id: categoryId,
+        video_url: null,
+        best_seller: bestSeller,
+        new_arrival: newArrival,
+        featured,
+        status,
+        sort_order: 0,
+        product_images: images,
+      }
+
+      const imagePayloads = images.map((url, idx) => ({ url, is_primary: idx === 0, alt_text: title.trim() }))
+
+      const result = product
+        ? await updateProduct(product.id, payload, imagePayloads)
+        : await createProduct(payload, imagePayloads)
+
+      if (result?.error) { toast.error(result.error); return }
+      toast.success(product ? 'Product updated!' : 'Product created!')
+      router.push('/admin/products')
+    })
+  }
+
+  const activeCategories = categories.filter(c => c.status === 'active')
+
+  return (
+    <div className="animate-in fade-in duration-300">
+      {/* Header Context */}
+      <div className="mb-8">
+        <button 
+          type="button" 
+          onClick={() => router.push('/admin/products')}
+          className="text-[13px] font-medium text-[#8A8A8A] hover:text-[#202124] transition-colors flex items-center gap-1.5 mb-5"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Back to products
+        </button>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-[28px] font-bold text-[#202124] tracking-tight">{product ? 'Edit product' : 'Add product'}</h1>
+            <p className="text-[14px] text-[#8A8A8A] mt-1.5">
+              {product ? 'Update product information, category and visibility.' : 'Add product information, choose its category and decide where it appears.'}
+            </p>
+          </div>
+          <div className="text-[12px] font-medium text-[#8A8A8A] tracking-wider uppercase">
+            {product ? 'Edit Catalogue Entry' : 'New Catalogue Entry'}
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+        
+        {/* LEFT COLUMN */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Section 01: Images */}
+          <div className="bg-white border border-[#ECE8EA] rounded-2xl p-8 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-8 h-8 rounded-full bg-[#FCE8EF] text-[#E52D68] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                01
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-[#202124]">Product images</h2>
+                <p className="text-sm text-[#8A8A8A] mt-0.5">Add clear photos customers will see in the catalogue.</p>
+              </div>
+            </div>
+
+            <div className="pl-12">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+                {images.map((url, idx) => (
+                  <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-[#ECE8EA] group bg-[#FAF9FA]">
+                    <Image src={url} alt="Preview" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"
+                    >
+                      <X size={14} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <label className="block border-2 border-dashed border-[#ECE8EA] hover:border-[#E52D68]/40 hover:bg-[#FAF9FA] rounded-xl p-8 text-center cursor-pointer transition-colors group">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#FAF9FA] group-hover:bg-white flex items-center justify-center text-[#E52D68] border border-[#ECE8EA] transition-colors">
+                  {uploadingImage ? <Loader2 className="animate-spin" size={20} /> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>}
+                </div>
+                <h4 className="text-sm font-semibold text-[#202124] mb-1">Upload product image</h4>
+                <p className="text-xs text-[#8A8A8A]">Click to add a high-quality JPG or PNG</p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
+                  className="hidden"
+                />
+              </label>
+              {errors.images && <p className="text-xs text-red-500 mt-2 font-medium">{errors.images}</p>}
+            </div>
+          </div>
+
+          {/* Section 02: Details */}
+          <div className="bg-white border border-[#ECE8EA] rounded-2xl p-8 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-8 h-8 rounded-full bg-[#FCE8EF] text-[#E52D68] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                02
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-[#202124]">Product details</h2>
+                <p className="text-sm text-[#8A8A8A] mt-0.5">The essential information customers will read.</p>
+              </div>
+            </div>
+
+            <div className="pl-12 space-y-5">
+              <div>
+                <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">Product title *</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="e.g. Organic Cotton Swaddle"
+                  className="w-full px-4 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white placeholder-[#8A8A8A]"
+                />
+                {errors.title && <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.title}</p>}
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">Description *</label>
+                <textarea
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  rows={4}
+                  placeholder="Describe the product in a few clear sentences."
+                  className="w-full px-4 py-3 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white placeholder-[#8A8A8A] resize-none"
+                />
+                <p className="text-[12px] text-[#8A8A8A] mt-1.5">Keep it concise and helpful for parents.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">Price (₹) *</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A8A8A] font-medium">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={price}
+                      onChange={e => setPrice(e.target.value)}
+                      placeholder="0"
+                      className="w-full pl-8 pr-4 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white"
+                    />
+                  </div>
+                  {errors.price && <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.price}</p>}
+                </div>
+                <div>
+                  <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">Category *</label>
+                  <select
+                    value={categoryId}
+                    onChange={e => setCategoryId(e.target.value)}
+                    className="w-full px-4 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white text-[#202124] appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Select a category</option>
+                    {activeCategories.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                  {errors.category && <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.category}</p>}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 03: Classification */}
+          <div className="bg-white border border-[#ECE8EA] rounded-2xl p-8 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-8 h-8 rounded-full bg-[#FCE8EF] text-[#E52D68] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                03
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-[#202124]">Classification</h2>
+                <p className="text-sm text-[#8A8A8A] mt-0.5">A product can appear in more than one collection.</p>
+              </div>
+            </div>
+
+            <div className="pl-12">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                
+                {/* Best Seller */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-[#ECE8EA] bg-[#FAF9FA]">
+                  <div>
+                    <h4 className="text-[13px] font-semibold text-[#202124]">Best Seller</h4>
+                    <p className="text-[11px] text-[#8A8A8A] mt-0.5">Highlight a customer favourite</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={bestSeller} onChange={(e) => setBestSeller(e.target.checked)} />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#E52D68]"></div>
+                  </label>
+                </div>
+
+                {/* New Arrival */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-[#ECE8EA] bg-[#FAF9FA]">
+                  <div>
+                    <h4 className="text-[13px] font-semibold text-[#202124]">New Arrival</h4>
+                    <p className="text-[11px] text-[#8A8A8A] mt-0.5">Show in the newest collection</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={newArrival} onChange={(e) => setNewArrival(e.target.checked)} />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#E52D68]"></div>
+                  </label>
+                </div>
+
+                {/* Featured */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-[#ECE8EA] bg-[#FAF9FA]">
+                  <div>
+                    <h4 className="text-[13px] font-semibold text-[#202124]">Featured</h4>
+                    <p className="text-[11px] text-[#8A8A8A] mt-0.5">Give it priority placement</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#E52D68]"></div>
+                  </label>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Publish Card */}
+        <div className="lg:col-span-4 sticky top-[100px]">
+          <div className="bg-white border border-[#ECE8EA] rounded-2xl p-6 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.05)]">
+            <h3 className="text-base font-bold text-[#202124] mb-1">Publish product</h3>
+            <p className="text-[13px] text-[#8A8A8A] mb-6 leading-relaxed">
+              Active products appear on the Baby&apos;s Bazaar website.
+            </p>
+
+            <div className="flex items-center justify-between p-4 rounded-xl border border-[#ECE8EA] bg-[#FAF9FA] mb-6">
+              <div>
+                <h4 className="text-[13px] font-semibold text-[#202124]">Status</h4>
+                <p className="text-[12px] text-[#8A8A8A] mt-0.5">{status === 'active' ? 'Visible on website' : 'Hidden from website'}</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={status === 'active'} onChange={(e) => setStatus(e.target.checked ? 'active' : 'inactive')} />
+                <div className="w-10 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2E7D32]"></div>
+              </label>
+            </div>
+
+            <div className="bg-[#FAF9FA] rounded-xl p-4 mb-6">
+              <h5 className="text-[10px] font-bold text-[#8A8A8A] uppercase tracking-wider mb-3">After Saving</h5>
+              <div className="flex items-center gap-2 text-[12px] font-medium text-[#202124]">
+                <span>Product</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#8A8A8A]"><path d="m9 18 6-6-6-6"/></svg>
+                <span className={status === 'active' ? 'text-[#2E7D32]' : 'text-[#8A8A8A]'}>{status === 'active' ? 'Published' : 'Draft'}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#8A8A8A]"><path d="m9 18 6-6-6-6"/></svg>
+                <span>Website</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                type="submit"
+                disabled={pending || uploadingImage}
+                className="w-full bg-[#E52D68] hover:bg-[#D4225A] text-white text-[14px] font-semibold py-3 rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-2"
+              >
+                {pending ? <Loader2 className="animate-spin" size={18} /> : null}
+                <span>{product ? 'Save changes' : 'Publish product'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/admin/products')}
+                disabled={pending || uploadingImage}
+                className="w-full bg-white hover:bg-[#FAF9FA] text-[#202124] text-[14px] font-medium py-3 rounded-xl border border-[#ECE8EA] transition-all disabled:opacity-70"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  )
+}
