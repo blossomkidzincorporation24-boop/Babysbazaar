@@ -28,9 +28,9 @@ interface ContactUsClientProps {
 
 export default function ContactUsClient({ settings }: ContactUsClientProps) {
   const storeName = settings?.store_name || "Baby's Bazaar"
-  const rawWhatsApp = settings?.whatsapp_number || '919965512123'
-  const cleanWhatsApp = rawWhatsApp.replace(/\D/g, '') || '919965512123'
-  const storePhone = settings?.phone || '+91 99655 12123'
+  const rawWhatsApp = settings?.whatsapp_number || '918489824888'
+  const cleanWhatsApp = rawWhatsApp.replace(/\D/g, '') || '918489824888'
+  const storePhone = settings?.phone || '+91 84898 24888'
   const storeEmail = settings?.email || 'support@babysbazaar.com'
   const storeAddress =
     settings?.address ||

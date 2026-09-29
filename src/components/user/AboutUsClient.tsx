@@ -151,7 +151,7 @@ const WHY_US_FEATURES = [
 ]
 
 export default function AboutUsClient({ whatsappNumber, photos = [] }: AboutUsClientProps) {
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '919965512123'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
     "Hi Baby's Bazaar, I'd like to chat and know more about your collection!"
   )}`

@@ -15,7 +15,7 @@ interface FooterProps {
 }
 
 export default function Footer({ settings }: FooterProps) {
-  const cleanPhone = settings?.phone || '+91 99655 12123'
+  const cleanPhone = settings?.phone || '+91 84898 24888'
   const address = settings?.address || '60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011'
   const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(address)}`
 

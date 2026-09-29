@@ -16,7 +16,7 @@ export default function MobileBottomNav({ whatsappNumber }: MobileBottomNavProps
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || '919965512123'
+  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || '918489824888'
   const whatsappUrl = `https://wa.me/${cleanWhatsApp}?text=${encodeURIComponent("Hi Baby's Bazaar, I want to inquire about your products.")}`
 
   const handleSearchSubmit = (e: React.FormEvent) => {

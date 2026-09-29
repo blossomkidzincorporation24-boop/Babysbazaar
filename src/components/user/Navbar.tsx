@@ -24,7 +24,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || '919965512123'
+  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || '918489824888'
   const whatsappUrl = `https://wa.me/${cleanWhatsApp}?text=${encodeURIComponent("Hi Baby's Bazaar, I want to inquire about your products.")}`
 
   // Scroll listener for dynamic sticky header

@@ -29,7 +29,7 @@ export default function ProductDetailView({
   whatsappNumber,
   bestSellers = [],
 }: ProductDetailViewProps) {
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '919965512123'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
 
   const images = product.product_images && product.product_images.length > 0
     ? product.product_images

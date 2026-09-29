@@ -27,7 +27,7 @@ export default function ReelsSection({ reels = [], whatsappNumber }: ReelsSectio
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
   const [likedReels, setLikedReels] = useState<Record<string, boolean>>({})
 
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '919965512123'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
   const displayReels = (reels || []).filter(Boolean)
 
   const checkScroll = () => {

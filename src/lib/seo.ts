@@ -41,7 +41,7 @@ export function generateLocalBusinessSchema(settings?: {
 } | null) {
   const siteUrl = getSiteUrl()
   const storeName = settings?.store_name || "Baby's Bazaar"
-  const phone = settings?.phone || settings?.whatsapp_number || '+91 99655 12123'
+  const phone = settings?.phone || settings?.whatsapp_number || '+91 84898 24888'
   const email = settings?.email || 'support@babysbazaar.com'
   const logo = settings?.logo || `${siteUrl}/logo.png`
 
@@ -161,7 +161,7 @@ export function generateProductSchema(product: {
       seller: {
         '@type': 'Store',
         name: "Baby's Bazaar",
-        telephone: '+91 99655 12123',
+        telephone: '+91 84898 24888',
       },
     },
   }
