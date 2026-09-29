@@ -73,13 +73,13 @@ export default async function UserHomePage() {
       .limit(8),
     supabase
       .from('products')
-      .select('id, title, slug, price, product_images, new_arrival, categories(name, slug)')
+      .select('id, title, slug, price, product_images, description, new_arrival, categories(name, slug)')
       .eq('status', 'active')
       .eq('new_arrival', true)
       .limit(8),
     supabase
       .from('products')
-      .select('id, title, slug, price, product_images, best_seller, categories(name, slug)')
+      .select('id, title, slug, price, product_images, description, best_seller, categories(name, slug)')
       .eq('status', 'active')
       .eq('best_seller', true)
       .limit(8),

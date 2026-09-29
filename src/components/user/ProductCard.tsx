@@ -62,15 +62,17 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
           {categoryTag}
         </p>
 
-        {/* Product Title (Controlled line-clamp & min-height for uniform row alignment) */}
-        <h3 className="font-roboto-slab text-xs sm:text-base font-semibold text-[#1C1C18] leading-snug group-hover/link:text-[#FF3A3A] transition-colors mb-1.5 line-clamp-2 min-h-[2.25rem] sm:min-h-[2.6rem] flex items-center">
+        {/* Product Title */}
+        <h3 className="font-roboto-slab text-xs sm:text-base font-semibold text-[#1C1C18] leading-snug group-hover/link:text-[#FF3A3A] transition-colors mb-1 line-clamp-2">
           {product.title}
         </h3>
 
-        {/* Product Description (2-3 lines clamp & min-height for equal card height) */}
-        <p className="font-roboto-slab text-[11px] sm:text-xs text-[#55433F] leading-normal line-clamp-2 sm:line-clamp-3 min-h-[2.1rem] sm:min-h-[2.8rem] mb-3">
-          {product.description || ''}
-        </p>
+        {/* Product Description - renders only when present to avoid awkward blank gap */}
+        {product.description?.trim() ? (
+          <p className="font-roboto-slab text-[11px] sm:text-xs text-[#55433F] leading-normal line-clamp-2 mb-2.5">
+            {product.description.trim()}
+          </p>
+        ) : null}
       </Link>
 
       {/* Bottom Bar: Price + Enquire Button visually aligned at card bottom */}
