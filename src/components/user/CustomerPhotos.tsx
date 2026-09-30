@@ -100,9 +100,9 @@ export default function CustomerPhotos({ photos = [] }: CustomerPhotosProps) {
 
             <Link
               href="/about-us#happy-customers"
-              className="text-xs sm:text-sm font-semibold text-[#8B5CF6] hover:text-[#7C3AED] transition-colors ml-2 sm:ml-4 whitespace-nowrap"
+              className="text-xs sm:text-sm font-semibold text-[#F40436] hover:text-[#D9032F] transition-colors ml-2 sm:ml-4 whitespace-nowrap"
             >
-              see all &gt;
+              View all moments &rarr;
             </Link>
           </div>
         </div>

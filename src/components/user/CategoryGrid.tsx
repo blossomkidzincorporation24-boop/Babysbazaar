@@ -35,7 +35,7 @@ export default function CategoryGrid({ categories = [] }: CategoryGridProps) {
                 <Link
                   key={cat.id || idx}
                   href={`/category/${cat.slug}`}
-                  className="group relative h-38 sm:h-42 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col justify-end bg-[#DADADA]"
+                  className="group relative h-40 sm:h-48 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col justify-end bg-gray-100"
                 >
                   {/* Background Image */}
                   <Image
@@ -46,9 +46,12 @@ export default function CategoryGrid({ categories = [] }: CategoryGridProps) {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
 
+                  {/* Subtle dark gradient for contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+
                   {/* Red Corner Badge */}
-                  <div className="relative z-10 w-fit bg-[#F62222] rounded-tr-[45px] pl-3.5 pr-8 py-2 shadow-xs transition-transform group-hover:translate-x-0.5">
-                    <span className="font-roboto-slab text-white text-xs sm:text-[15px] font-semibold tracking-wide block truncate max-w-[190px]">
+                  <div className="relative z-10 w-fit bg-[#F40436] rounded-tr-[40px] pl-3.5 pr-7 py-2 shadow-sm transition-transform group-hover:translate-x-1">
+                    <span className="font-roboto-slab text-white text-xs sm:text-[14px] font-semibold tracking-wide block truncate max-w-[160px] sm:max-w-[210px]">
                       {cat.name}
                     </span>
                   </div>

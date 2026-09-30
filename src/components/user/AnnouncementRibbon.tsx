@@ -29,7 +29,7 @@ interface AnnouncementRibbonProps {
 
 const DEFAULT_PERKS = [
   { emoji: '✨', text: 'Free Shipping on Orders above ₹3500' },
-  { emoji: '📦', text: 'Same day shipping for orders before 5 PM' },
+  { emoji: '📦', text: 'Fast dispatch within 24-48 hours across India' },
   { emoji: '🚚', text: 'Shipping across INDIA' },
   { emoji: '🌍', text: 'For international and wholesale orders DM us' },
 ]

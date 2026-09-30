@@ -45,10 +45,10 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
   const waUrl = `https://wa.me/${cleanPhone}?text=${waText}`
 
   return (
-    <div className="bg-white rounded-xl border border-[#D1D1D1] p-2.5 sm:p-3.5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between h-full group/card w-full">
+    <div className="bg-white rounded-2xl border border-gray-200/90 hover:border-gray-300 p-2.5 sm:p-3.5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between h-full group/card w-full">
       <Link href={`/product/${product.slug}`} className="flex flex-col flex-1 group/link">
         {/* Product Image Container (Enforced 1:1 Aspect Ratio, object-cover, object-center, no distortion) */}
-        <div className="relative aspect-square w-full rounded-lg sm:rounded-xl overflow-hidden bg-gray-50 mb-2.5 sm:mb-3 shrink-0">
+        <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-50 mb-2.5 sm:mb-3 shrink-0">
           <Image
             src={imageUrl}
             alt={product.title}
@@ -59,7 +59,7 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
         </div>
 
         {/* Category Tag */}
-        <p className="font-roboto-slab text-[10px] sm:text-[11px] font-semibold text-[#FF3A3A] tracking-[0.55px] uppercase mb-1 line-clamp-1">
+        <p className="font-sans text-[11px] font-semibold text-[#E1144B] mb-1 line-clamp-1">
           {categoryTag}
         </p>
 
