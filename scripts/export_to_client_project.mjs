@@ -1,19 +1,40 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(url, key);
+// Source data from original database
+const OLD_SUPABASE_URL = 'https://tlxnoookluearhfnnkqv.supabase.co';
+const OLD_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRseG5vb29rbHVlYXJoZm5ua3F2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDQyNDUzMSwiZXhwIjoyMTA2MDAwNTMxfQ.12V4BiZgfEgHTN4y33jlSWkMWnNwmHKGJ8OwayauD3o';
+
+const OLD_R2_PUBLIC = 'https://pub-6b5fe11c332549b48587be24c3d0b7b2.r2.dev';
+const NEW_R2_PUBLIC = 'https://pub-ba17cde8ab794e6492c23c76c20220e5.r2.dev';
+
+const supabase = createClient(OLD_SUPABASE_URL, OLD_SUPABASE_KEY);
+
+function cleanUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  if (url.startsWith(OLD_R2_PUBLIC)) {
+    return url.replace(OLD_R2_PUBLIC, NEW_R2_PUBLIC);
+  }
+  if (url.includes('supabase.co/storage/v1/object/public/')) {
+    const parts = url.split('supabase.co/storage/v1/object/public/');
+    return `${NEW_R2_PUBLIC}/${parts[1]}`;
+  }
+  return url;
+}
 
 function escapeSql(val) {
   if (val === null || val === undefined) return 'NULL';
   if (typeof val === 'boolean') return val ? 'TRUE' : 'FALSE';
   if (typeof val === 'number') return val.toString();
   if (Array.isArray(val)) {
-    const arr = val.map(v => '"' + v.replace(/"/g, '""') + '"').join(',');
+    const arr = val.map(v => {
+      const cleaned = cleanUrl(v);
+      return '"' + cleaned.replace(/"/g, '""') + '"';
+    }).join(',');
     return "'{" + arr + "}'";
   }
-  return "'" + val.replace(/'/g, "''") + "'";
+  const cleaned = cleanUrl(val);
+  return "'" + cleaned.replace(/'/g, "''") + "'";
 }
 
 async function run() {
@@ -27,6 +48,7 @@ async function run() {
   let sql = `-- ==============================================================================
 -- BABY'S BAZAAR — COMPLETE CLIENT SUPABASE MIGRATION & DATA RESTORE
 -- Target Project: https://pyopqnrubhfknxsmuqkc.supabase.co
+-- Cloudflare R2 Media: https://pub-ba17cde8ab794e6492c23c76c20220e5.r2.dev
 -- Run this script in the Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/pyopqnrubhfknxsmuqkc/sql
 -- ==============================================================================
@@ -346,7 +368,7 @@ CREATE POLICY "Admins can insert logs" ON activity_logs FOR INSERT WITH CHECK (i
   }
 
   fs.writeFileSync('supabase/CLIENT_PROJECT_RESTORE.sql', sql);
-  console.log('SUCCESS: Generated supabase/CLIENT_PROJECT_RESTORE.sql with size ' + sql.length + ' bytes');
+  console.log('SUCCESS: Generated updated supabase/CLIENT_PROJECT_RESTORE.sql with size ' + sql.length + ' bytes');
 }
 
 run();
