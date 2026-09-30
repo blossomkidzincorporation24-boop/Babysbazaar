@@ -13,6 +13,7 @@ import {
   Shirt,
   Package,
   Settings2,
+  Layers,
 } from 'lucide-react'
 import { Category } from '@/types/database.types'
 import {
@@ -34,6 +35,10 @@ function isClothing(cat: Category): boolean {
   return cat.slug === CLOTHING_SLUG || cat.name.toLowerCase() === 'clothing'
 }
 
+function isToys(cat: Category): boolean {
+  return cat.slug === 'toys' || cat.name.toLowerCase() === 'toys'
+}
+
 export default function CategoriesClient({ initialCategories }: Props) {
   const [categories, setCategories] = useState(initialCategories)
   const [showModal, setShowModal] = useState(false)
@@ -42,6 +47,11 @@ export default function CategoriesClient({ initialCategories }: Props) {
   const [formImage, setFormImage] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [pending, startTransition] = useTransition()
+
+  // Filter out subcategories belonging to Toys so main category grid stays clean
+  const topLevelCategories = categories.filter(
+    (c) => !c.description?.includes('[parent:toys]')
+  )
 
   function openAdd() {
     setEditing(null)
@@ -121,24 +131,33 @@ export default function CategoriesClient({ initialCategories }: Props) {
   return (
     <div className="animate-in fade-in duration-300">
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#202124] tracking-tight">Categories</h1>
           <p className="text-sm text-[#8A8A8A] mt-1">
             Create and manage the categories customers use to browse your catalogue.
           </p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 bg-[#E52D68] hover:bg-[#D4225A] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-sm"
-        >
-          <Plus size={16} strokeWidth={2.5} />
-          <span>Add category</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/categories/toys"
+            className="flex items-center gap-2 bg-pink-50 hover:bg-pink-100 text-[#FF2E63] border border-pink-200 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+          >
+            <Layers size={16} />
+            <span>Manage Toys (3-Level)</span>
+          </Link>
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-2 bg-[#E52D68] hover:bg-[#D4225A] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-sm cursor-pointer"
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            <span>Add category</span>
+          </button>
+        </div>
       </div>
 
       {/* Category Cards Grid */}
-      {categories.length === 0 ? (
+      {topLevelCategories.length === 0 ? (
         <div className="text-center py-24 bg-white border border-[#ECE8EA] rounded-2xl">
           <Package size={48} className="mx-auto mb-4 text-[#ECE8EA]" strokeWidth={1.5} />
           <h3 className="text-lg font-semibold text-[#202124] mb-1">No categories yet</h3>
@@ -152,7 +171,7 @@ export default function CategoriesClient({ initialCategories }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {categories.map(cat => (
+          {topLevelCategories.map(cat => (
             <div
               key={cat.id}
               className="bg-white border border-[#ECE8EA] rounded-2xl overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] transition-all duration-200 group"
@@ -233,6 +252,17 @@ export default function CategoriesClient({ initialCategories }: Props) {
                     >
                       <Settings2 size={13} />
                       Manage
+                    </Link>
+                  )}
+
+                  {/* Manage Toys Button — ONLY for Toys */}
+                  {isToys(cat) && (
+                    <Link
+                      href="/admin/categories/toys"
+                      className="flex items-center gap-1.5 text-[12px] font-semibold text-[#FF2E63] bg-pink-50 px-3 py-1.5 rounded-lg hover:bg-pink-100 transition-colors border border-pink-200"
+                    >
+                      <Layers size={13} />
+                      Manage Subcategories
                     </Link>
                   )}
                 </div>

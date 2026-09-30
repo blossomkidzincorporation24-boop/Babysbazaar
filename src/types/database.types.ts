@@ -69,6 +69,7 @@ export interface Database {
           image: string | null
           status: 'active' | 'inactive'
           sort_order: number
+          parent_id?: string | null
           created_at: string
           updated_at: string
         }
@@ -80,6 +81,7 @@ export interface Database {
           image?: string | null
           status?: 'active' | 'inactive'
           sort_order?: number
+          parent_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -91,6 +93,7 @@ export interface Database {
           image?: string | null
           status?: 'active' | 'inactive'
           sort_order?: number
+          parent_id?: string | null
           updated_at?: string
         }
       }
@@ -436,7 +439,9 @@ export interface Database {
   }
 }
 
-export type Category = Database['public']['Tables']['categories']['Row']
+export type Category = Database['public']['Tables']['categories']['Row'] & {
+  product_count?: number
+}
 export type Product = Database['public']['Tables']['products']['Row']
 export type ProductImage = Database['public']['Tables']['product_images']['Row']
 export type Photo = Database['public']['Tables']['photos']['Row']

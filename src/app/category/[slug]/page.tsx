@@ -99,6 +99,25 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  if (slug === 'toys') {
+    redirect('/toys')
+  }
+  const toySubcategorySlugs = [
+    'baby-toys',
+    'educational-toys',
+    'remote-control-toys',
+    'cars-and-vehicles',
+    'dolls-and-pretend-play',
+    'building-toys',
+    'musical-toys',
+    'outdoor-toys',
+    'soft-toys',
+    'activity-and-puzzle',
+    'ride-on-toys',
+  ]
+  if (toySubcategorySlugs.includes(slug)) {
+    redirect(`/toys/${slug}`)
+  }
   if (LEGACY_SLUG_MAP[slug]) {
     redirect(`/category/${LEGACY_SLUG_MAP[slug]}`)
   }

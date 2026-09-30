@@ -49,6 +49,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
   const navLinks = [
     { label: 'Home', href: '/' },
     { label: 'Categories', href: '/categories' },
+    { label: 'Toys', href: '/toys' },
     { label: 'About', href: '/about-us' },
     { label: 'Contact', href: '/contact' },
   ]

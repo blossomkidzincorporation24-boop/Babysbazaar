@@ -18,6 +18,24 @@ const CLOTHING_AGE_OPTIONS = [
   '18–24 Months',
 ]
 
+const TOY_AGE_OPTIONS = [
+  '0–12 Months',
+  '1–3 Years',
+  '3–5 Years',
+  '5–8 Years',
+  '8+ Years',
+]
+
+const TOY_FEATURE_OPTIONS = [
+  'Battery Operated',
+  'Outdoor',
+  'Sound & Lights',
+  'Educational & STEM',
+  'Non-Toxic',
+  'USB Rechargeable',
+  'Remote Controlled',
+]
+
 interface Props {
   categories: Category[]
   product?: any
@@ -28,10 +46,39 @@ export default function ProductForm({ categories, product }: Props) {
   const [pending, startTransition] = useTransition()
   const [uploadingImage, setUploadingImage] = useState(false)
 
+  const activeCategories = categories.filter(c => c.status === 'active')
+  const toySubcategories = activeCategories.filter(c => c.description?.includes('[parent:toys]'))
+  const topCategories = activeCategories.filter(c => !c.description?.includes('[parent:toys]'))
+  const toysMainCat = topCategories.find(c => c.slug === 'toys')
+  const initialToySubcat = toySubcategories.find(s => s.id === (product?.category_id || ''))
+
   const [title, setTitle] = useState(product?.title ?? '')
   const [description, setDescription] = useState(product?.description ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
-  const [categoryId, setCategoryId] = useState(product?.category_id ?? '')
+  const [categoryId, setCategoryId] = useState(() => {
+    if (initialToySubcat && toysMainCat) return toysMainCat.id
+    return product?.category_id ?? ''
+  })
+  const [toySubcategoryId, setToySubcategoryId] = useState<string>(() => {
+    return initialToySubcat?.id ?? ''
+  })
+
+  // Toy Classification Fields
+  const rawShortDesc = product?.short_description || ''
+  const [toyProductType, setToyProductType] = useState<string>(() => {
+    const match = rawShortDesc.match(/Type:\s*([^|]+)/i)
+    return match ? match[1].trim() : ''
+  })
+  const [toyAgeRange, setToyAgeRange] = useState<string>(() => {
+    const match = rawShortDesc.match(/Age:\s*([^|]+)/i)
+    return match ? match[1].trim() : ''
+  })
+  const [toyTags, setToyTags] = useState<string[]>(() => {
+    const match = rawShortDesc.match(/Tags:\s*([^|]+)/i)
+    if (!match) return []
+    return match[1].split(',').map((t: string) => t.trim()).filter(Boolean)
+  })
+
   const [selectedAges, setSelectedAges] = useState<string[]>(() => {
     if (!product) return []
     const source = (product?.short_description || '') + ' ' + (product?.description || '')
@@ -67,25 +114,49 @@ export default function ProductForm({ categories, product }: Props) {
     if (!categoryId) errs.category = 'Category is required'
     if (images.length === 0) errs.images = 'At least one product image is required'
     setErrors(errs)
-    return Object.keys(errs).length === 0
+    if (Object.keys(errs).length > 0) return false
+
+    if (isToysSelected && !toySubcategoryId) {
+      toast.error('Please select a toy subcategory')
+      return false
+    }
+
+    return true
   }
 
-  const activeCategories = categories.filter(c => c.status === 'active')
   const selectedCat = activeCategories.find(c => c.id === categoryId)
   const isClothingSelected = selectedCat?.slug === 'clothing' || selectedCat?.name.toLowerCase() === 'clothing'
+  const isToysSelected = selectedCat?.slug === 'toys' || selectedCat?.name.toLowerCase() === 'toys'
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!validate()) return
 
     startTransition(async () => {
+      let finalCategoryId = categoryId
+      let finalShortDescription: string | null = null
+
+      if (isClothingSelected) {
+        finalShortDescription = selectedAges.length > 0 ? selectedAges.join(', ') : null
+      } else if (isToysSelected) {
+        if (toySubcategoryId) {
+          finalCategoryId = toySubcategoryId
+        }
+        const toyMetaParts = [
+          toyProductType ? `Type: ${toyProductType}` : null,
+          toyAgeRange ? `Age: ${toyAgeRange}` : null,
+          toyTags.length > 0 ? `Tags: ${toyTags.join(', ')}` : null,
+        ].filter(Boolean)
+        finalShortDescription = toyMetaParts.length > 0 ? toyMetaParts.join(' | ') : null
+      }
+
       const payload = {
         title: title.trim(),
         slug: title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-        short_description: isClothingSelected && selectedAges.length > 0 ? selectedAges.join(', ') : null,
+        short_description: finalShortDescription,
         description: description.trim() || undefined,
         price: Number(price),
-        category_id: categoryId,
+        category_id: finalCategoryId,
         video_url: null,
         best_seller: bestSeller,
         new_arrival: newArrival,
@@ -241,17 +312,127 @@ export default function ProductForm({ categories, product }: Props) {
                   <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">Category *</label>
                   <select
                     value={categoryId}
-                    onChange={e => setCategoryId(e.target.value)}
+                    onChange={e => {
+                      setCategoryId(e.target.value)
+                      // Reset toy subcategory if category changes away from toys
+                      const chosen = activeCategories.find(c => c.id === e.target.value)
+                      if (chosen?.slug !== 'toys' && chosen?.name.toLowerCase() !== 'toys') {
+                        setToySubcategoryId('')
+                      }
+                    }}
                     className="w-full px-4 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white text-[#202124] appearance-none cursor-pointer"
                   >
                     <option value="" disabled>Select a category</option>
-                    {activeCategories.map(c => (
+                    {topCategories.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
                   {errors.category && <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.category}</p>}
                 </div>
               </div>
+
+              {/* ───── TOYS CLASSIFICATION & SUBCATEGORY (3-LEVEL HIERARCHY) ───── */}
+              {isToysSelected && (
+                <div className="pt-5 border-t border-[#ECE8EA] space-y-5 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold text-gray-900">Toy Classification (3-Level System)</h4>
+                      <p className="text-xs text-gray-500">Toys → Subcategory → Product Type &amp; Tags</p>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-50 text-[#FF2E63] border border-pink-100">
+                      Toys System
+                    </span>
+                  </div>
+
+                  {/* 1. Subcategory Dropdown */}
+                  <div>
+                    <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">
+                      Toy Subcategory *
+                    </label>
+                    <select
+                      value={toySubcategoryId}
+                      onChange={e => setToySubcategoryId(e.target.value)}
+                      className="w-full px-4 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white text-[#202124] appearance-none cursor-pointer"
+                    >
+                      <option value="">Select a subcategory (e.g. Remote Control Toys)</option>
+                      {toySubcategories.map(sub => (
+                        <option key={sub.id} value={sub.id}>{sub.name}</option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-gray-400 mt-1">
+                      Choose which toy subcategory this item belongs to.
+                    </p>
+                  </div>
+
+                  {/* 2. Product Type & Age Range */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">
+                        Product Type
+                      </label>
+                      <input
+                        type="text"
+                        value={toyProductType}
+                        onChange={e => setToyProductType(e.target.value)}
+                        placeholder="e.g. RC Car, Plush Doll, Stunt Bike"
+                        className="w-full px-4 py-2 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">
+                        Age Range
+                      </label>
+                      <select
+                        value={toyAgeRange}
+                        onChange={e => setToyAgeRange(e.target.value)}
+                        className="w-full px-4 py-2 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white text-[#202124] appearance-none cursor-pointer"
+                      >
+                        <option value="">Select recommended age</option>
+                        {TOY_AGE_OPTIONS.map(a => (
+                          <option key={a} value={a}>{a}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* 3. Feature Tags */}
+                  <div>
+                    <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">
+                      Features &amp; Tags
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {TOY_FEATURE_OPTIONS.map(feat => {
+                        const isChecked = toyTags.includes(feat)
+                        return (
+                          <label
+                            key={feat}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition-all select-none ${
+                              isChecked
+                                ? 'bg-pink-50 border-[#FF2E63] text-[#FF2E63]'
+                                : 'bg-white border-[#ECE8EA] text-gray-700 hover:bg-[#FAF9FA]'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                setToyTags(prev =>
+                                  prev.includes(feat)
+                                    ? prev.filter(t => t !== feat)
+                                    : [...prev, feat]
+                                )
+                              }}
+                              className="w-4 h-4 rounded text-[#FF2E63] border-gray-300 focus:ring-[#FF2E63] accent-[#FF2E63]"
+                            />
+                            <span>{feat}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Age attribute selection for Clothing */}
               {isClothingSelected && (

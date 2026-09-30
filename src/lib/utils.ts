@@ -33,3 +33,8 @@ export function buildWhatsAppUrl(whatsappNumber: string, productTitle: string, p
 export function getPublicUrl(supabaseUrl: string, bucket: string, path: string): string {
   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
 }
+
+export function cleanToyDescription(rawDescription?: string | null): string {
+  if (!rawDescription) return ''
+  return rawDescription.replace(/\[parent:[^\]]+\]\s*/gi, '').trim()
+}

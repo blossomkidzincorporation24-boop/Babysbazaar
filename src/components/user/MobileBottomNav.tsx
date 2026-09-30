@@ -91,6 +91,14 @@ export default function MobileBottomNav({ whatsappNumber }: MobileBottomNavProps
                 <span>All Categories</span>
               </Link>
               <Link
+                href="/toys"
+                onClick={() => setMenuOpen(false)}
+                className="py-3 px-4 rounded-xl text-sm font-semibold text-gray-800 hover:bg-pink-50 hover:text-[#FF2E63] flex items-center gap-3"
+              >
+                <span className="text-base">🧸</span>
+                <span>Toys</span>
+              </Link>
+              <Link
                 href="/category/new-clothings"
                 onClick={() => setMenuOpen(false)}
                 className="py-3 px-4 rounded-xl text-sm font-semibold text-gray-800 hover:bg-pink-50 hover:text-[#FF2E63] flex items-center gap-3"
