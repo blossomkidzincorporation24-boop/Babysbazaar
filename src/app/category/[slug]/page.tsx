@@ -13,6 +13,7 @@ import { ProductItem } from '@/components/user/ProductCard'
 
 // Backward-compatible redirect map for legacy slugs
 const LEGACY_SLUG_MAP: Record<string, string> = {
+  'baby-clothing': 'clothing',
   'babys-beeding-and-beds': 'baby-bedding-and-beds',
   'mom-maternity': 'maternity-and-nursing',
   'mosquito-protection': 'baby-safety-and-protection',
@@ -124,7 +125,7 @@ export default async function CategoryPage({
   if (category?.id) {
     const { data: dbProducts } = await supabase
       .from('products')
-      .select('id, title, slug, price, product_images, description, new_arrival, best_seller, categories(name, slug)')
+      .select('id, title, slug, price, product_images, description, short_description, new_arrival, best_seller, categories(name, slug)')
       .eq('category_id', category.id)
       .eq('status', 'active')
       .order('created_at', { ascending: false })

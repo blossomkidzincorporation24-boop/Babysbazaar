@@ -14,22 +14,14 @@ interface CategoryDetailClientProps {
   whatsappNumber?: string | null
 }
 
-// Age filter items for clothing
-const AGE_FILTER_ITEMS = [
-  '0–3 Months',
-  '3–6 Months',
-  '6–12 Months',
-  '1–2 Years',
-  '2–4 Years',
-]
-
-// Optional Baby Age Sub-Filters for baby clothing
-const BABY_AGE_GROUPS = [
-  '0–3 Months',
-  '3–6 Months',
-  '6–12 Months',
-  '1–2 Years',
-  '2–4 Years',
+// Age filter items for clothing matching the 5 standard age groups
+const CLOTHING_AGE_FILTERS = [
+  { label: 'All', value: 'all', pill: 'All' },
+  { label: '1–3 Months', value: '1–3', pill: '1–3M' },
+  { label: '3–6 Months', value: '3–6', pill: '3–6M' },
+  { label: '6–12 Months', value: '6–12', pill: '6–12M' },
+  { label: '12–18 Months', value: '12–18', pill: '12–18M' },
+  { label: '18–24 Months', value: '18–24', pill: '18–24M' },
 ]
 
 export default function CategoryDetailClient({
@@ -61,26 +53,18 @@ export default function CategoryDetailClient({
   // Filters State
   const [minPrice, setMinPrice] = useState<number>(0)
   const [maxPrice, setMaxPrice] = useState<number>(860)
-  const [selectedAges, setSelectedAges] = useState<string[]>([])
+  const [selectedAge, setSelectedAge] = useState<string>('all')
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'figma' | 'babyAge'>('figma')
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'newest'>('featured')
-
-  // Toggle filter selection
-  const toggleAgeFilter = (item: string) => {
-    setSelectedAges((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
-    )
-  }
 
   // Clear all filters
   const resetFilters = () => {
     setMinPrice(0)
     setMaxPrice(860)
-    setSelectedAges([])
+    setSelectedAge('all')
   }
 
-  const isFiltered = minPrice > 0 || maxPrice < 860 || (isClothingCategory && selectedAges.length > 0)
+  const isFiltered = minPrice > 0 || maxPrice < 860 || (isClothingCategory && selectedAge !== 'all')
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
@@ -91,16 +75,20 @@ export default function CategoryDetailClient({
         // Soft match price check or if within range
       }
 
-      // Age / Tag filter - ONLY applicable for clothing categories
-      if (isClothingCategory && selectedAges.length > 0) {
-        const matchesAge = selectedAges.some((tag) => {
-          const lowerTag = tag.toLowerCase()
-          return (
-            product.title.toLowerCase().includes(lowerTag) ||
-            product.category_tag?.toLowerCase().includes(lowerTag) ||
-            product.description?.toLowerCase().includes(lowerTag)
-          )
-        })
+      // Age filter - ONLY applicable for clothing categories
+      if (isClothingCategory && selectedAge !== 'all') {
+        const lowerSelected = selectedAge.toLowerCase().replace(/–/g, '-')
+        const shortDesc = (product.short_description || '').toLowerCase().replace(/–/g, '-')
+        const desc = (product.description || '').toLowerCase().replace(/–/g, '-')
+        const title = (product.title || '').toLowerCase().replace(/–/g, '-')
+        const categoryTag = (product.category_tag || '').toLowerCase().replace(/–/g, '-')
+
+        const matchesAge =
+          shortDesc.includes(lowerSelected) ||
+          desc.includes(lowerSelected) ||
+          title.includes(lowerSelected) ||
+          categoryTag.includes(lowerSelected)
+
         if (!matchesAge) {
           return false
         }
@@ -108,7 +96,7 @@ export default function CategoryDetailClient({
 
       return true
     })
-  }, [allProducts, minPrice, maxPrice, selectedAges, isClothingCategory])
+  }, [allProducts, minPrice, maxPrice, selectedAge, isClothingCategory])
 
   // Sorted Products
   const sortedProducts = useMemo(() => {
@@ -202,6 +190,33 @@ export default function CategoryDetailClient({
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Public Website Age Filter Bar for Clothing */}
+                {isClothingCategory && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 p-3 sm:p-3.5 bg-gray-50 border border-gray-200/80 rounded-2xl">
+                    <span className="text-xs font-bold text-gray-700 font-poppins shrink-0">
+                      Age filter:
+                    </span>
+                    <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-wrap">
+                      {CLOTHING_AGE_FILTERS.map((item) => {
+                        const isActive = selectedAge === item.value
+                        return (
+                          <button
+                            key={item.value}
+                            onClick={() => setSelectedAge(item.value)}
+                            className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 select-none ${
+                              isActive
+                                ? 'bg-[#FF2E63] text-white shadow-xs'
+                                : 'bg-white hover:bg-gray-100 text-gray-700 border border-gray-200'
+                            }`}
+                          >
+                            {item.pill}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Sort & Count Header */}
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100 flex-wrap gap-2">
                   <p className="text-xs sm:text-sm font-medium text-gray-500 font-poppins">
@@ -315,64 +330,49 @@ export default function CategoryDetailClient({
 
             {/* Filter By Age - ONLY for clothing categories */}
             {isClothingCategory && (
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-poppins text-[20px] font-semibold text-[#212529] tracking-[-0.375px]">
+                  <h3 className="font-poppins text-[18px] font-semibold text-[#212529] tracking-[-0.375px]">
                     Filter By Age
                   </h3>
-                  {/* Secondary toggle for baby clothing age groups vs Figma brands */}
-                  <div className="flex items-center gap-1 text-[11px] font-poppins text-gray-400">
+                  {selectedAge !== 'all' && (
                     <button
-                      onClick={() => setActiveTab('figma')}
-                      className={`px-1.5 py-0.5 rounded cursor-pointer ${
-                        activeTab === 'figma' ? 'text-[#0067B2] font-semibold bg-blue-50' : 'hover:text-black'
-                      }`}
+                      onClick={() => setSelectedAge('all')}
+                      className="text-xs text-[#0067B2] hover:underline cursor-pointer"
                     >
-                      Brands
+                      Clear
                     </button>
-                    <span>|</span>
-                    <button
-                      onClick={() => setActiveTab('babyAge')}
-                      className={`px-1.5 py-0.5 rounded cursor-pointer ${
-                        activeTab === 'babyAge' ? 'text-[#0067B2] font-semibold bg-blue-50' : 'hover:text-black'
-                      }`}
-                    >
-                      Ages
-                    </button>
-                  </div>
+                  )}
                 </div>
 
-                {/* Exact Checkbox + Pill Rows from Figma Frame 1686556758 */}
-                <div className="flex flex-col gap-4">
-                  {(activeTab === 'figma' ? AGE_FILTER_ITEMS : BABY_AGE_GROUPS).map((item) => {
-                    const isChecked = selectedAges.includes(item)
+                <div className="flex flex-col gap-3">
+                  {CLOTHING_AGE_FILTERS.filter(f => f.value !== 'all').map((item) => {
+                    const isChecked = selectedAge === item.value
                     return (
                       <div
-                        key={item}
-                        onClick={() => toggleAgeFilter(item)}
-                        className="flex items-center gap-4 group cursor-pointer"
+                        key={item.value}
+                        onClick={() => setSelectedAge(isChecked ? 'all' : item.value)}
+                        className="flex items-center gap-3.5 group cursor-pointer select-none"
                       >
-                        {/* Exact 25px x 24px Subway Tick Checkbox */}
                         <div
-                          className={`w-[25px] h-[24px] rounded-[5px] flex items-center justify-center transition-colors shrink-0 ${
+                          className={`w-[22px] h-[22px] rounded-[5px] flex items-center justify-center transition-colors shrink-0 ${
                             isChecked
-                              ? 'bg-[#0067B2] text-white shadow-2xs'
-                              : 'bg-[#D1D1D1] group-hover:bg-[#c0c0c0]'
+                              ? 'bg-[#FF2E63] text-white shadow-2xs'
+                              : 'bg-gray-200 group-hover:bg-gray-300'
                           }`}
                         >
-                          {isChecked && <Check size={16} strokeWidth={3} />}
+                          {isChecked && <Check size={14} strokeWidth={3} />}
                         </div>
 
-                        {/* Exact Figma White Pill Card: border #D1D1D1, rounded-[4px], px-4 py-2 */}
                         <div
-                          className={`flex-1 px-4 py-2 rounded-[4px] border bg-white transition-all shadow-2xs ${
+                          className={`flex-1 px-3.5 py-2 rounded-lg border bg-white transition-all shadow-2xs ${
                             isChecked
-                              ? 'border-[#0067B2] ring-1 ring-[#0067B2] bg-blue-50/20'
-                              : 'border-[#D1D1D1] group-hover:border-gray-400'
+                              ? 'border-[#FF2E63] ring-1 ring-[#FF2E63] bg-pink-50/20'
+                              : 'border-gray-200 group-hover:border-gray-300'
                           }`}
                         >
-                          <span className="font-poppins text-[16px] font-normal text-black block truncate">
-                            {item}
+                          <span className={`font-poppins text-sm block truncate ${isChecked ? 'text-[#FF2E63] font-semibold' : 'text-gray-800'}`}>
+                            {item.label}
                           </span>
                         </div>
                       </div>
@@ -427,27 +427,37 @@ export default function CategoryDetailClient({
               {/* Age Filter Mobile - ONLY for clothing categories */}
               {isClothingCategory && (
                 <div className="space-y-3">
-                  <h4 className="font-poppins text-sm font-semibold text-gray-800">
-                    Filter By Age
-                  </h4>
-                  <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-1">
-                    {[...AGE_FILTER_ITEMS, ...BABY_AGE_GROUPS].map((item) => {
-                      const isChecked = selectedAges.includes(item)
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-poppins text-sm font-semibold text-gray-800">
+                      Filter By Age
+                    </h4>
+                    {selectedAge !== 'all' && (
+                      <button
+                        onClick={() => setSelectedAge('all')}
+                        className="text-xs text-[#0067B2] hover:underline"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                    {CLOTHING_AGE_FILTERS.map((item) => {
+                      const isChecked = selectedAge === item.value
                       return (
                         <div
-                          key={item}
-                          onClick={() => toggleAgeFilter(item)}
-                          className="flex items-center gap-3 cursor-pointer py-1"
+                          key={item.value}
+                          onClick={() => setSelectedAge(item.value)}
+                          className="flex items-center gap-3 cursor-pointer py-1.5"
                         >
                           <div
-                            className={`w-5 h-5 rounded flex items-center justify-center shrink-0 ${
-                              isChecked ? 'bg-[#0067B2] text-white' : 'bg-gray-200'
+                            className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${
+                              isChecked ? 'bg-[#FF2E63] text-white' : 'bg-gray-200'
                             }`}
                           >
-                            {isChecked && <Check size={12} strokeWidth={3} />}
+                            {isChecked && <Check size={11} strokeWidth={3} />}
                           </div>
-                          <span className="font-poppins text-sm text-gray-800 truncate">
-                            {item}
+                          <span className={`font-poppins text-xs truncate ${isChecked ? 'text-[#FF2E63] font-semibold' : 'text-gray-800'}`}>
+                            {item.label}
                           </span>
                         </div>
                       )

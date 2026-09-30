@@ -10,6 +10,14 @@ import { uploadFile, validateImageFile } from '@/lib/upload'
 import { Category, Product } from '@/types/database.types'
 import { formatPrice } from '@/lib/utils'
 
+const CLOTHING_AGE_OPTIONS = [
+  '1–3 Months',
+  '3–6 Months',
+  '6–12 Months',
+  '12–18 Months',
+  '18–24 Months',
+]
+
 interface Props {
   categories: Category[]
   product?: any
@@ -24,6 +32,14 @@ export default function ProductForm({ categories, product }: Props) {
   const [description, setDescription] = useState(product?.description ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
   const [categoryId, setCategoryId] = useState(product?.category_id ?? '')
+  const [selectedAges, setSelectedAges] = useState<string[]>(() => {
+    if (!product) return []
+    const source = (product?.short_description || '') + ' ' + (product?.description || '')
+    return CLOTHING_AGE_OPTIONS.filter(age => {
+      const altAge = age.replace(/–/g, '-')
+      return source.includes(age) || source.includes(altAge)
+    })
+  })
   const [images, setImages] = useState<string[]>(product?.product_images ?? [])
   const [bestSeller, setBestSeller] = useState(product?.best_seller ?? false)
   const [newArrival, setNewArrival] = useState(product?.new_arrival ?? false)
@@ -54,6 +70,10 @@ export default function ProductForm({ categories, product }: Props) {
     return Object.keys(errs).length === 0
   }
 
+  const activeCategories = categories.filter(c => c.status === 'active')
+  const selectedCat = activeCategories.find(c => c.id === categoryId)
+  const isClothingSelected = selectedCat?.slug === 'clothing' || selectedCat?.name.toLowerCase() === 'clothing'
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!validate()) return
@@ -62,7 +82,7 @@ export default function ProductForm({ categories, product }: Props) {
       const payload = {
         title: title.trim(),
         slug: title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-        short_description: null,
+        short_description: isClothingSelected && selectedAges.length > 0 ? selectedAges.join(', ') : null,
         description: description.trim() || undefined,
         price: Number(price),
         category_id: categoryId,
@@ -86,8 +106,6 @@ export default function ProductForm({ categories, product }: Props) {
       router.push('/admin/products')
     })
   }
-
-  const activeCategories = categories.filter(c => c.status === 'active')
 
   return (
     <div className="animate-in fade-in duration-300">
@@ -234,6 +252,52 @@ export default function ProductForm({ categories, product }: Props) {
                   {errors.category && <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.category}</p>}
                 </div>
               </div>
+
+              {/* Age attribute selection for Clothing */}
+              {isClothingSelected && (
+                <div className="pt-5 border-t border-[#ECE8EA] animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-[13px] font-semibold text-[#202124]">
+                      Age
+                    </label>
+                    <span className="text-[11px] text-[#8A8A8A]">
+                      Select all applicable age groups (multiple allowed)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {CLOTHING_AGE_OPTIONS.map(age => {
+                      const isChecked = selectedAges.includes(age)
+                      return (
+                        <label
+                          key={age}
+                          className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all select-none ${
+                            isChecked
+                              ? 'bg-[#FCE8EF] border-[#E52D68] text-[#E52D68] shadow-2xs'
+                              : 'bg-white border-[#ECE8EA] text-gray-700 hover:bg-[#FAF9FA]'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              setSelectedAges(prev =>
+                                prev.includes(age) ? prev.filter(a => a !== age) : [...prev, age]
+                              )
+                            }}
+                            className="w-4 h-4 rounded text-[#E52D68] border-gray-300 focus:ring-[#E52D68] accent-[#E52D68]"
+                          />
+                          <span>{age}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                  {selectedAges.length > 0 && (
+                    <p className="text-[12px] text-[#E52D68] mt-2 font-medium">
+                      Selected: {selectedAges.join(', ')}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

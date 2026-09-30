@@ -11,6 +11,7 @@ export interface ProductItem {
   price: number
   price_display?: string
   description?: string | null
+  short_description?: string | null
   product_images?: string[]
   new_arrival?: boolean
   best_seller?: boolean

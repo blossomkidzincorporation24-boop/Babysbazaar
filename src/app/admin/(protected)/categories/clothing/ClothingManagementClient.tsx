@@ -10,16 +10,11 @@ import {
   Trash2,
   X,
   Loader2,
-  Shirt,
   Baby,
   Ruler,
   Package,
 } from 'lucide-react'
 import {
-  createClothingSubcategory,
-  updateClothingSubcategory,
-  deleteClothingSubcategory,
-  toggleClothingSubcategoryStatus,
   createClothingAgeGroup,
   updateClothingAgeGroup,
   deleteClothingAgeGroup,
@@ -39,27 +34,23 @@ type ClothingItem = {
   updated_at: string
 }
 
-type TabKey = 'subcategories' | 'age_groups' | 'sizes'
+type TabKey = 'age_groups' | 'sizes'
 
-const TABS: { key: TabKey; label: string; icon: typeof Shirt }[] = [
-  { key: 'subcategories', label: 'Sub-categories', icon: Shirt },
+const TABS: { key: TabKey; label: string; icon: typeof Baby }[] = [
   { key: 'age_groups', label: 'Age Groups', icon: Baby },
   { key: 'sizes', label: 'Clothing Sizes', icon: Ruler },
 ]
 
 interface Props {
-  initialSubcategories: ClothingItem[]
   initialAgeGroups: ClothingItem[]
   initialSizes: ClothingItem[]
 }
 
 export default function ClothingManagementClient({
-  initialSubcategories,
   initialAgeGroups,
   initialSizes,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<TabKey>('subcategories')
-  const [subcategories, setSubcategories] = useState(initialSubcategories)
+  const [activeTab, setActiveTab] = useState<TabKey>('age_groups')
   const [ageGroups, setAgeGroups] = useState(initialAgeGroups)
   const [sizes, setSizes] = useState(initialSizes)
 
@@ -71,7 +62,6 @@ export default function ClothingManagementClient({
 
   function getActiveList(): ClothingItem[] {
     switch (activeTab) {
-      case 'subcategories': return subcategories
       case 'age_groups': return ageGroups
       case 'sizes': return sizes
     }
@@ -79,29 +69,23 @@ export default function ClothingManagementClient({
 
   function getTabConfig() {
     switch (activeTab) {
-      case 'subcategories':
-        return {
-          title: 'Clothing Sub-categories',
-          addLabel: '+ Add Sub-category',
-          modalTitle: editingItem ? 'Edit Sub-category' : 'Add Sub-category',
-          fieldLabel: 'Sub-category Name',
-          placeholder: 'Enter sub-category name',
-        }
       case 'age_groups':
         return {
-          title: 'Age Groups',
+          title: 'Clothing Age Groups',
+          description: 'Organize clothing products using age attributes (e.g. 1–3M, 3–6M, 6–12M).',
           addLabel: '+ Add Age Group',
           modalTitle: editingItem ? 'Edit Age Group' : 'Add Age Group',
           fieldLabel: 'Age Group Name',
-          placeholder: 'Enter age group',
+          placeholder: 'e.g. 1–3 Months',
         }
       case 'sizes':
         return {
           title: 'Clothing Sizes',
+          description: 'Manage standard garment size variants for product enquiries.',
           addLabel: '+ Add Size',
           modalTitle: editingItem ? 'Edit Clothing Size' : 'Add Clothing Size',
           fieldLabel: 'Size Name',
-          placeholder: 'Enter clothing size',
+          placeholder: 'e.g. 0–3M, 3–6M',
         }
     }
   }
@@ -131,97 +115,86 @@ export default function ClothingManagementClient({
     startTransition(async () => {
       let result: { error?: string; success?: boolean } | undefined
 
-      if (activeTab === 'subcategories') {
-        result = editingItem
-          ? await updateClothingSubcategory(editingItem.id, formName.trim())
-          : await createClothingSubcategory(formName.trim())
-      } else if (activeTab === 'age_groups') {
+      if (activeTab === 'age_groups') {
         result = editingItem
           ? await updateClothingAgeGroup(editingItem.id, formName.trim())
           : await createClothingAgeGroup(formName.trim())
-      } else {
+      } else if (activeTab === 'sizes') {
         result = editingItem
           ? await updateClothingSize(editingItem.id, formName.trim())
           : await createClothingSize(formName.trim())
       }
 
       if (result?.error) { toast.error(result.error); return }
-      toast.success(editingItem ? 'Updated successfully!' : 'Created successfully!')
+      toast.success(editingItem ? 'Updated!' : 'Created!')
       closeModal()
       window.location.reload()
     })
   }
 
   async function handleDelete(item: ClothingItem) {
-    const config = getTabConfig()
-    if (!confirm(`Delete "${item.name}"?\n\nAre you sure you want to delete this? This cannot be undone.`)) return
+    if (!confirm(`Delete "${item.name}"?`)) return
 
     let result: { error?: string; success?: boolean } | undefined
-
-    if (activeTab === 'subcategories') {
-      result = await deleteClothingSubcategory(item.id)
-      if (!result?.error) setSubcategories(prev => prev.filter(i => i.id !== item.id))
-    } else if (activeTab === 'age_groups') {
+    if (activeTab === 'age_groups') {
       result = await deleteClothingAgeGroup(item.id)
       if (!result?.error) setAgeGroups(prev => prev.filter(i => i.id !== item.id))
-    } else {
+    } else if (activeTab === 'sizes') {
       result = await deleteClothingSize(item.id)
       if (!result?.error) setSizes(prev => prev.filter(i => i.id !== item.id))
     }
 
-    if (result?.error) { toast.error(result.error); return }
-    toast.success('Deleted successfully')
+    if (result?.error) toast.error(result.error)
+    else toast.success('Deleted')
   }
 
   async function handleToggle(item: ClothingItem) {
     let result: { error?: string; success?: boolean } | undefined
-
-    if (activeTab === 'subcategories') {
-      result = await toggleClothingSubcategoryStatus(item.id, item.status)
-      if (!result?.error) setSubcategories(prev => prev.map(i => i.id === item.id ? { ...i, status: i.status === 'active' ? 'inactive' : 'active' } : i))
-    } else if (activeTab === 'age_groups') {
+    if (activeTab === 'age_groups') {
       result = await toggleClothingAgeGroupStatus(item.id, item.status)
       if (!result?.error) setAgeGroups(prev => prev.map(i => i.id === item.id ? { ...i, status: i.status === 'active' ? 'inactive' : 'active' } : i))
-    } else {
+    } else if (activeTab === 'sizes') {
       result = await toggleClothingSizeStatus(item.id, item.status)
       if (!result?.error) setSizes(prev => prev.map(i => i.id === item.id ? { ...i, status: i.status === 'active' ? 'inactive' : 'active' } : i))
     }
 
-    if (result?.error) { toast.error(result.error); return }
-    toast.success('Status updated')
+    if (result?.error) toast.error(result.error)
+    else toast.success('Status updated')
   }
 
   const config = getTabConfig()
-  const list = getActiveList()
+  const currentList = getActiveList()
 
   return (
     <div className="animate-in fade-in duration-300">
-      {/* Breadcrumb + Back */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Back Link */}
+      <Link
+        href="/admin/categories"
+        className="inline-flex items-center gap-2 text-sm text-[#8A8A8A] hover:text-[#202124] transition-colors mb-6"
+      >
+        <ArrowLeft size={16} />
+        Back to Categories
+      </Link>
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <div className="flex items-center gap-2 text-[13px] text-[#8A8A8A] mb-2">
-            <Link href="/admin/categories" className="hover:text-[#202124] transition-colors">
-              Categories
-            </Link>
-            <span>/</span>
-            <span className="text-[#202124] font-medium">Clothing</span>
-          </div>
-          <h1 className="text-2xl font-bold text-[#202124] tracking-tight">Clothing Management</h1>
+          <h1 className="text-2xl font-bold text-[#202124] tracking-tight">Clothing Attributes</h1>
           <p className="text-sm text-[#8A8A8A] mt-1">
-            Manage clothing sub-categories, age groups and clothing sizes.
+            Manage age groups and size attributes used for filtering and organizing Clothing products.
           </p>
         </div>
-        <Link
-          href="/admin/categories"
-          className="flex items-center gap-2 text-sm font-medium text-[#8A8A8A] hover:text-[#202124] transition-colors"
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-2 bg-[#E52D68] hover:bg-[#D4225A] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all shadow-sm"
         >
-          <ArrowLeft size={16} />
-          Back to Categories
-        </Link>
+          <Plus size={16} strokeWidth={2.5} />
+          <span>{config.addLabel}</span>
+        </button>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex items-center gap-1 bg-[#FAF9FA] border border-[#ECE8EA] rounded-xl p-1 mb-6 w-fit">
+      {/* Tabs (Age Groups & Sizes ONLY - Subcategory removed) */}
+      <div className="flex gap-2 border-b border-[#ECE8EA] mb-6">
         {TABS.map(tab => {
           const Icon = tab.icon
           const isActive = activeTab === tab.key
@@ -229,157 +202,147 @@ export default function ClothingManagementClient({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-white text-[#202124] shadow-sm border border-[#ECE8EA]'
-                  : 'text-[#8A8A8A] hover:text-[#202124]'
+                  ? 'border-[#E52D68] text-[#E52D68]'
+                  : 'border-transparent text-[#8A8A8A] hover:text-[#202124]'
               }`}
             >
-              <Icon size={15} className={isActive ? 'text-[#E52D68]' : ''} />
-              {tab.label}
+              <Icon size={16} />
+              <span>{tab.label}</span>
+              <span className={`text-[11px] px-2 py-0.5 rounded-full ${
+                isActive ? 'bg-[#FCE8EF] text-[#E52D68]' : 'bg-gray-100 text-gray-500'
+              }`}>
+                {tab.key === 'age_groups' ? ageGroups.length : sizes.length}
+              </span>
             </button>
           )
         })}
       </div>
 
-      {/* Tab Content */}
-      <div className="bg-white border border-[#ECE8EA] rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] overflow-hidden">
-        {/* Tab Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[#ECE8EA]">
-          <h2 className="text-[15px] font-bold text-[#202124]">{config.title}</h2>
-          <button
-            onClick={openAdd}
-            className="flex items-center gap-1.5 text-[13px] font-semibold text-[#E52D68] bg-[#FCE8EF] px-4 py-2 rounded-lg hover:bg-[#F8D2DF] transition-colors"
-          >
-            <Plus size={14} strokeWidth={2.5} />
-            {config.addLabel}
-          </button>
+      {/* Section Info Card */}
+      <div className="bg-[#FAF9FA] border border-[#ECE8EA] rounded-xl p-4 mb-6 flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold text-[#202124]">{config.title}</h3>
+          <p className="text-xs text-[#8A8A8A] mt-0.5">{config.description}</p>
         </div>
-
-        {/* Table */}
-        {list.length === 0 ? (
-          <div className="text-center py-16">
-            <Package size={40} className="mx-auto mb-3 text-[#ECE8EA]" />
-            <p className="text-sm font-medium text-[#202124]">Nothing here yet</p>
-            <p className="text-xs text-[#8A8A8A] mt-1">Click the button above to add your first item.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-[#ECE8EA] text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider">
-                  <th className="px-6 py-3.5 font-medium">Name</th>
-                  <th className="px-6 py-3.5 font-medium">Status</th>
-                  <th className="px-6 py-3.5 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#ECE8EA]">
-                {list.map(item => (
-                  <tr key={item.id} className="group hover:bg-[#FAF9FA] transition-colors duration-150">
-                    <td className="px-6 py-4">
-                      <span className="text-[14px] font-medium text-[#202124]">{item.name}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium ${
-                          item.status === 'active'
-                            ? 'bg-[#E8F5E9] text-[#2E7D32]'
-                            : 'bg-[#F1F3F4] text-[#5F6368]'
-                        }`}
-                      >
-                        <span className={`w-1.5 h-1.5 rounded-full ${item.status === 'active' ? 'bg-[#2E7D32]' : 'bg-[#5F6368]'}`} />
-                        {item.status === 'active' ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {/* Toggle */}
-                        <label className="relative inline-flex items-center cursor-pointer mr-2" title={item.status === 'active' ? 'Deactivate' : 'Activate'}>
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={item.status === 'active'}
-                            onChange={() => handleToggle(item)}
-                          />
-                          <div className="w-8 h-[18px] bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-[#2E7D32]" />
-                        </label>
-
-                        {/* Edit */}
-                        <button
-                          onClick={() => openEdit(item)}
-                          className="p-1.5 rounded-lg text-[#8A8A8A] hover:text-[#202124] hover:bg-white border border-transparent hover:border-[#ECE8EA] transition-all"
-                          title="Edit"
-                        >
-                          <Pencil size={15} />
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                          onClick={() => handleDelete(item)}
-                          className="p-1.5 rounded-lg text-[#8A8A8A] hover:text-[#E52D68] hover:bg-white border border-transparent hover:border-[#ECE8EA] transition-all"
-                          title="Delete"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <span className="text-xs text-gray-500 font-medium">
+          {currentList.length} total
+        </span>
       </div>
 
-      {/* ───── ADD / EDIT MODAL ───── */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4">
-          <div
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-            onClick={e => e.stopPropagation()}
+      {/* List */}
+      {currentList.length === 0 ? (
+        <div className="text-center py-20 bg-white border border-[#ECE8EA] rounded-2xl">
+          <Package size={40} className="mx-auto mb-3 text-[#ECE8EA]" />
+          <h4 className="text-sm font-semibold text-[#202124] mb-1">No items yet</h4>
+          <p className="text-xs text-[#8A8A8A] mb-4">Click below to add your first entry.</p>
+          <button
+            onClick={openAdd}
+            className="inline-flex items-center gap-2 bg-[#E52D68] text-white text-xs font-semibold px-4 py-2 rounded-xl"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 pt-6 pb-4">
-              <h3 className="text-lg font-bold text-[#202124]">{config.modalTitle}</h3>
-              <button
-                onClick={closeModal}
-                className="p-1.5 rounded-lg text-[#8A8A8A] hover:text-[#202124] hover:bg-[#FAF9FA] transition-all"
+            <Plus size={14} /> Add
+          </button>
+        </div>
+      ) : (
+        <div className="bg-white border border-[#ECE8EA] rounded-2xl overflow-hidden shadow-xs">
+          <div className="divide-y divide-[#ECE8EA]">
+            {currentList.map(item => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between p-4 hover:bg-[#FAF9FA] transition-colors"
               >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2 h-2 rounded-full ${
+                    item.status === 'active' ? 'bg-green-500' : 'bg-gray-300'
+                  }`} />
+                  <span className="text-sm font-semibold text-[#202124]">{item.name}</span>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                    item.status === 'active'
+                      ? 'bg-green-50 text-green-700'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {item.status}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  {/* Toggle */}
+                  <label className="relative inline-flex items-center cursor-pointer mr-2" title="Toggle status">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={item.status === 'active'}
+                      onChange={() => handleToggle(item)}
+                    />
+                    <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#2E7D32]" />
+                  </label>
+
+                  {/* Edit */}
+                  <button
+                    onClick={() => openEdit(item)}
+                    className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+                    title="Edit"
+                  >
+                    <Pencil size={14} />
+                  </button>
+
+                  {/* Delete */}
+                  <button
+                    onClick={() => handleDelete(item)}
+                    className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+                    title="Delete"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#202124]">{config.modalTitle}</h3>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-[13px] font-semibold text-[#202124] mb-1.5">
-                  {config.fieldLabel}
+                <label className="block text-xs font-semibold text-[#202124] mb-1.5">
+                  {config.fieldLabel} *
                 </label>
                 <input
                   type="text"
                   value={formName}
                   onChange={e => setFormName(e.target.value)}
                   placeholder={config.placeholder}
-                  className="w-full px-4 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68] transition-all bg-white placeholder-[#8A8A8A]"
+                  className="w-full px-3.5 py-2.5 text-sm border border-[#ECE8EA] rounded-xl focus:outline-none focus:border-[#E52D68] focus:ring-1 focus:ring-[#E52D68]"
                   autoFocus
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  disabled={pending}
-                  className="px-5 py-2.5 text-sm font-medium text-[#202124] bg-white border border-[#ECE8EA] rounded-xl hover:bg-[#FAF9FA] transition-all"
+                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={pending}
-                  className="px-5 py-2.5 text-sm font-semibold text-white bg-[#E52D68] hover:bg-[#D4225A] rounded-xl transition-all shadow-sm disabled:opacity-70 flex items-center gap-2"
+                  className="px-5 py-2 text-xs font-semibold text-white bg-[#E52D68] hover:bg-[#D4225A] rounded-xl flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  {pending && <Loader2 size={14} className="animate-spin" />}
-                  Save
+                  {pending && <Loader2 size={13} className="animate-spin" />}
+                  {editingItem ? 'Save Changes' : 'Create'}
                 </button>
               </div>
             </form>
