@@ -9,28 +9,28 @@ export default function FaqSection() {
 
   const faqs = [
     {
-      q: 'Is my payment information safe?',
-      a: 'Yes, 100%. We use bank-grade 256-bit encrypted checkout gateways. We also offer Cash on Delivery (COD) across India so you can pay conveniently when your order reaches your doorstep.',
+      q: 'How do I place an order or enquire about a product?',
+      a: 'Simply tap the "Enquire on WhatsApp" button on any product. This immediately connects you with our store team on WhatsApp (+91 84898 24888) with the exact product name, price, and link pre-filled so we can assist you directly.',
+    },
+    {
+      q: 'How does payment work?',
+      a: 'Once we confirm product availability, sizing, and your delivery address on WhatsApp, we share simple and secure payment details (UPI / Google Pay / Bank Transfer) to confirm your dispatch.',
     },
     {
       q: 'How long does delivery take?',
-      a: 'All orders are dispatched within 24 hours. Metro deliveries typically arrive within 2–4 business days, while other locations take 4–6 business days.',
+      a: 'All orders are carefully packed and dispatched within 24 to 48 hours from our store in Erode. Deliveries within Tamil Nadu usually arrive in 1–3 days, and across India in 3–5 business days.',
     },
     {
-      q: 'Can I return or exchange product?',
-      a: 'Absolutely! We offer a 7-day hassle-free return and exchange policy for any manufacturing defects or sizing issues. Simply message our WhatsApp team for quick replacement.',
+      q: 'Can I visit your retail store in Erode?',
+      a: 'Yes, absolutely! We welcome you to visit Baby\'s Bazaar in person at 60, Perundurai Rd (near Sudha Hospital), Edayankattuvalasu, Erode, Tamil Nadu 638011.',
     },
     {
-      q: 'How can I track my order?',
-      a: 'Once your order is dispatched, you will receive an SMS and WhatsApp update with your live courier tracking link.',
+      q: 'What materials are used for your baby clothes and bedding?',
+      a: 'All our baby apparel, bedding sets, and maternity nighties are crafted from 100% breathable, ultra-soft cotton and baby-safe fabrics gentle on delicate newborn skin.',
     },
     {
-      q: 'Are your products made from real leather?',
-      a: 'Our products are crafted from 100% certified child-safe vegan leather and organic materials, completely BPA-free, lead-free, and cruelty-free for sensitive baby skin.',
-    },
-    {
-      q: 'How long will your leather products last?',
-      a: 'Our premium baby products are built to withstand everyday baby adventures, water splashes, and gentle wipe-downs, designed to stay durable for years.',
+      q: 'Can I request additional photos or video clips before purchasing?',
+      a: 'Yes! Just ask us on WhatsApp. Our team will gladly send you real-time photos, color choices, and video clips of the exact items before packaging.',
     },
   ]
 

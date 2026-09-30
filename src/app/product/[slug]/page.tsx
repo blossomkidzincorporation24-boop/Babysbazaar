@@ -89,8 +89,8 @@ export default async function ProductPage({
   const { slug } = await params
   const supabase = await createClient()
 
-  // Concurrently fetch settings, product, and best sellers
-  const [settings, { data: dbProduct }, { data: dbBestSellers }] = await Promise.all([
+  // Concurrently fetch settings and product
+  const [settings, { data: dbProduct }] = await Promise.all([
     getPublicSettings(),
     supabase
       .from('products')
@@ -98,17 +98,22 @@ export default async function ProductPage({
       .eq('slug', slug)
       .eq('status', 'active')
       .maybeSingle(),
-    supabase
-      .from('products')
-      .select('id, title, slug, price, product_images, categories(name, slug)')
-      .eq('status', 'active')
-      .eq('best_seller', true)
-      .limit(4),
   ])
 
   if (!dbProduct) {
     notFound()
   }
+
+  // Fetch related products from the same category
+  const { data: dbRelated } = await supabase
+    .from('products')
+    .select('id, title, slug, price, product_images, categories(name, slug)')
+    .eq('status', 'active')
+    .eq('category_id', dbProduct.category_id)
+    .neq('id', dbProduct.id)
+    .limit(4)
+
+  const relatedItems = dbRelated && dbRelated.length > 0 ? dbRelated : []
 
   // Extract images
   const images = ((dbProduct.images as any[]) || []).sort((a, b) => {
@@ -159,7 +164,7 @@ export default async function ProductPage({
         <ProductDetailView
           product={product}
           whatsappNumber={settings?.whatsapp_number}
-          bestSellers={dbBestSellers || []}
+          bestSellers={relatedItems}
         />
       </main>
 

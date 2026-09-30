@@ -36,10 +36,11 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
       : product.categories?.name) ||
     'BABY ESSENTIALS'
 
-  // WhatsApp prefilled message
+  // Standardized WhatsApp prefilled message
   const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://babysbazaar.com/product/${product.slug}`
+  const formattedPrice = product.price_display || `₹${product.price?.toLocaleString('en-IN') || product.price}`
   const waText = encodeURIComponent(
-    `Hi Baby's Bazaar,\nI want to enquire about ${product.title} priced at ${product.price_display || formatPrice(product.price)}.\n\nProduct:\n${productUrl}`
+    `Hello Baby's Bazaar, I am interested in:\nProduct: ${product.title}\nPrice: ${formattedPrice}\nProduct Link: ${productUrl}\n\nPlease share availability and delivery details.`
   )
   const waUrl = `https://wa.me/${cleanPhone}?text=${waText}`
 

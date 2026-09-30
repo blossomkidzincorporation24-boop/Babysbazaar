@@ -64,6 +64,7 @@ export default function CategoryDetailClient({
   const [selectedAges, setSelectedAges] = useState<string[]>([])
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'figma' | 'babyAge'>('figma')
+  const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'newest'>('featured')
 
   // Toggle filter selection
   const toggleAgeFilter = (item: string) => {
@@ -108,6 +109,21 @@ export default function CategoryDetailClient({
       return true
     })
   }, [allProducts, minPrice, maxPrice, selectedAges, isClothingCategory])
+
+  // Sorted Products
+  const sortedProducts = useMemo(() => {
+    const list = [...filteredProducts]
+    if (sortBy === 'price-asc') {
+      return list.sort((a, b) => (a.price || 0) - (b.price || 0))
+    }
+    if (sortBy === 'price-desc') {
+      return list.sort((a, b) => (b.price || 0) - (a.price || 0))
+    }
+    if (sortBy === 'newest') {
+      return list.sort((a, b) => (b.new_arrival ? 1 : 0) - (a.new_arrival ? 1 : 0))
+    }
+    return list
+  }, [filteredProducts, sortBy])
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -185,14 +201,39 @@ export default function CategoryDetailClient({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5 sm:gap-5 md:gap-6 w-full">
-                {filteredProducts.map((prod) => (
-                  <ProductCard
-                    key={prod.id}
-                    product={prod}
-                    whatsappNumber={whatsappNumber}
-                  />
-                ))}
+              <div className="space-y-4">
+                {/* Sort & Count Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-gray-100 flex-wrap gap-2">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 font-poppins">
+                    Showing <span className="font-bold text-gray-900">{sortedProducts.length}</span> items
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="sort-dropdown" className="text-xs font-semibold text-gray-600 font-poppins hidden sm:inline">
+                      Sort By:
+                    </label>
+                    <select
+                      id="sort-dropdown"
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="text-xs font-semibold bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#0067B2] cursor-pointer font-poppins"
+                    >
+                      <option value="featured">Featured</option>
+                      <option value="price-asc">Price: Low to High</option>
+                      <option value="price-desc">Price: High to Low</option>
+                      <option value="newest">Newest First</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5 sm:gap-5 md:gap-6 w-full">
+                  {sortedProducts.map((prod) => (
+                    <ProductCard
+                      key={prod.id}
+                      product={prod}
+                      whatsappNumber={whatsappNumber}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>

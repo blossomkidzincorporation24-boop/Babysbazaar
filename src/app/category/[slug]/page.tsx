@@ -1,7 +1,7 @@
 export const revalidate = 60
 
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getPublicSettings } from '@/lib/actions/settings'
 import { getSiteUrl, generateBreadcrumbSchema } from '@/lib/seo'
@@ -11,17 +11,30 @@ import Footer from '@/components/user/Footer'
 import CategoryDetailClient from '@/components/user/CategoryDetailClient'
 import { ProductItem } from '@/components/user/ProductCard'
 
+// Backward-compatible redirect map for legacy slugs
+const LEGACY_SLUG_MAP: Record<string, string> = {
+  'babys-beeding-and-beds': 'baby-bedding-and-beds',
+  'mom-maternity': 'maternity-and-nursing',
+  'mosquito-protection': 'baby-safety-and-protection',
+  'babys-travel-acceseries': 'baby-travel-and-strollers',
+  'babys-bath-and-care': 'baby-bath-and-care',
+  'babys-feeding': 'baby-feeding',
+  'babys-walker-ride-on': 'baby-walkers-and-ride-ons',
+  'babys-cycle-and-tricycle': 'baby-cycles-and-tricycles',
+}
+
 // Helper to format slug to human-readable title (e.g. new-clothings -> "New clothings")
 function formatSlugToTitle(slug: string): string {
   if (slug === 'new-clothings') return 'New Clothings'
   if (slug === 'baby-clothes') return 'Baby Clothes'
   if (slug === 'baby-toys') return 'Baby Toys'
-  if (slug === 'babys-feeding') return "Baby's Feeding"
-  if (slug === 'babys-beds') return "Baby's Beds"
-  if (slug === 'mosquito-protection') return 'Mosquito Protection'
-  if (slug === 'baby-walkers') return 'Baby Walkers'
-  if (slug === 'babys-cycle') return "Baby's Cycle"
-  if (slug.startsWith('babys-carrier')) return "Baby's Carrier"
+  if (slug === 'baby-feeding' || slug === 'babys-feeding') return "Baby's Feeding"
+  if (slug.includes('bed')) return "Baby's Beds & Bedding"
+  if (slug.includes('safety') || slug === 'mosquito-protection') return 'Baby Safety & Protection'
+  if (slug.includes('walker')) return 'Baby Walkers & Ride-Ons'
+  if (slug.includes('cycle')) return "Baby's Cycles & Tricycles"
+  if (slug.includes('travel') || slug.includes('carrier')) return "Baby Travel & Strollers"
+  if (slug.includes('maternity') || slug.includes('mom')) return "Maternity & Nursing"
 
   return slug
     .split('-')
@@ -34,7 +47,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
-  const { slug } = await params
+  const { slug: rawSlug } = await params
+  const slug = LEGACY_SLUG_MAP[rawSlug] || rawSlug
   const supabase = await createClient()
 
   const { data: category } = await supabase
@@ -84,6 +98,9 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  if (LEGACY_SLUG_MAP[slug]) {
+    redirect(`/category/${LEGACY_SLUG_MAP[slug]}`)
+  }
   const supabase = await createClient()
 
   // Concurrently fetch settings, category, and matching products
