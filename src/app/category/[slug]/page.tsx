@@ -137,6 +137,7 @@ export default async function CategoryPage({
         slug: p.slug,
         price: p.price,
         description: p.description,
+        short_description: p.short_description,
         product_images: p.product_images,
         new_arrival: p.new_arrival,
         best_seller: p.best_seller,

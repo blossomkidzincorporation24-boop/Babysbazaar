@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShieldCheck, Sparkles, Eye } from 'lucide-react'
@@ -12,6 +12,7 @@ export interface DetailedProduct {
   price: number
   original_price?: number
   description?: string | null
+  short_description?: string | null
   product_images?: string[]
   category_name?: string
   category_slug?: string
@@ -23,6 +24,14 @@ interface ProductDetailViewProps {
   whatsappNumber?: string | null
   bestSellers?: any[]
 }
+
+const ALL_AGE_GROUPS = [
+  '1–3 Months',
+  '3–6 Months',
+  '6–12 Months',
+  '12–18 Months',
+  '18–24 Months',
+]
 
 export default function ProductDetailView({
   product,
@@ -38,13 +47,35 @@ export default function ProductDetailView({
   const [selectedImage, setSelectedImage] = useState(images[0])
   const [quantity, setQuantity] = useState(1)
 
-  // Clothing size variants
+  // Clothing category detection
   const isClothing =
-    (product.category_slug || '').includes('cloth') ||
-    (product.category_name || '').toLowerCase().includes('cloth') ||
-    (product.category_name || '').toLowerCase().includes('maternity')
-  const CLOTHING_SIZES = ['0–3 Months', '3–6 Months', '6–12 Months', '1–2 Years', '2–4 Years']
-  const [selectedVariant, setSelectedVariant] = useState<string>(isClothing ? '0–3 Months' : '')
+    (product.category_slug || '').toLowerCase().includes('cloth') ||
+    (product.category_name || '').toLowerCase().includes('cloth')
+
+  // Extract which age groups were selected/toggled in admin for this product
+  const availableAges = useMemo(() => {
+    if (!product.short_description) return []
+    const norm = (s: string) =>
+      s.toLowerCase().replace(/[\u2013\u2014–—]/g, '-').replace(/\s+/g, ' ').trim()
+    const descNorm = norm(product.short_description)
+
+    const matched = ALL_AGE_GROUPS.filter((age) => {
+      const ageNorm = norm(age)
+      const ageShort = ageNorm.replace(' months', '')
+      return descNorm.includes(ageNorm) || descNorm.includes(ageShort)
+    })
+    if (matched.length > 0) return matched
+
+    return product.short_description.split(',').map((s) => s.trim()).filter(Boolean)
+  }, [product.short_description])
+
+  const [selectedVariant, setSelectedVariant] = useState<string>(() => availableAges[0] || '')
+
+  useEffect(() => {
+    if (availableAges.length > 0 && (!selectedVariant || !availableAges.includes(selectedVariant))) {
+      setSelectedVariant(availableAges[0])
+    }
+  }, [availableAges, selectedVariant])
 
   // Pricing calculations
   const price = product.price
@@ -52,7 +83,7 @@ export default function ProductDetailView({
 
   // Standardized WhatsApp Enquiry Message (Audit Specification)
   const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://babysbazaar.com/product/${product.slug}`
-  const variantLine = isClothing && selectedVariant ? `\nVariant: ${selectedVariant}` : ''
+  const variantLine = isClothing && selectedVariant ? `\nVariant / Age: ${selectedVariant}` : ''
   const waMessage = encodeURIComponent(
     `Hello Baby's Bazaar, I am interested in:\nProduct: ${product.title}\nPrice: ₹${price.toLocaleString('en-IN')}\nQuantity: ${quantity}${variantLine}\nProduct Link: ${productUrl}\n\nPlease share availability and delivery details.`
   )
@@ -193,21 +224,22 @@ export default function ProductDetailView({
               </span>
             </div>
 
-            {/* Clothing Size / Variant Selector (if clothing category) */}
-            {isClothing && (
+            {/* Clothing Size / Age Variant Selector (ONLY show options toggled in admin) */}
+            {isClothing && availableAges.length > 0 && (
               <div className="mb-6 space-y-2.5">
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Select Size / Age: <span className="text-[#E1144B] font-bold">{selectedVariant}</span>
+                  Select Size / Age:{' '}
+                  <span className="text-[#FF2E63] font-bold">{selectedVariant}</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {CLOTHING_SIZES.map((sz) => (
+                  {availableAges.map((sz) => (
                     <button
                       key={sz}
                       type="button"
                       onClick={() => setSelectedVariant(sz)}
                       className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                         selectedVariant === sz
-                          ? 'bg-[#E1144B] text-white border-[#E1144B] shadow-xs scale-102'
+                          ? 'bg-[#FF2E63] text-white border-[#FF2E63] shadow-xs scale-102'
                           : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
                       }`}
                     >

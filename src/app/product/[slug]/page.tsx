@@ -134,6 +134,7 @@ export default async function ProductPage({
     price: dbProduct.price,
     original_price: Math.round(dbProduct.price * 1.25),
     description: dbProduct.description,
+    short_description: dbProduct.short_description,
     product_images:
       productImages.length > 0
         ? productImages

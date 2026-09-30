@@ -50,9 +50,20 @@ export default function CategoryDetailClient({
     )
   }, [categorySlug, categoryName])
 
+  // Dynamic slider ceiling based on actual products in this category
+  const sliderMax = useMemo(() => {
+    if (!allProducts || allProducts.length === 0) return 2000
+    const highest = Math.max(...allProducts.map((p) => p.price || 0))
+    return highest > 0 ? Math.max(Math.ceil((highest * 1.2) / 50) * 50, 1000) : 2000
+  }, [allProducts])
+
   // Filters State
   const [minPrice, setMinPrice] = useState<number>(0)
-  const [maxPrice, setMaxPrice] = useState<number>(860)
+  const [maxPrice, setMaxPrice] = useState<number>(() => {
+    if (!initialProducts || initialProducts.length === 0) return 2000
+    const highest = Math.max(...initialProducts.map((p) => p.price || 0))
+    return highest > 0 ? Math.max(Math.ceil((highest * 1.2) / 50) * 50, 1000) : 2000
+  })
   const [selectedAge, setSelectedAge] = useState<string>('all')
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'newest'>('featured')
@@ -60,34 +71,50 @@ export default function CategoryDetailClient({
   // Clear all filters
   const resetFilters = () => {
     setMinPrice(0)
-    setMaxPrice(860)
+    setMaxPrice(sliderMax)
     setSelectedAge('all')
   }
 
-  const isFiltered = minPrice > 0 || maxPrice < 860 || (isClothingCategory && selectedAge !== 'all')
+  const isFiltered = minPrice > 0 || maxPrice < sliderMax || (isClothingCategory && selectedAge !== 'all')
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
     return allProducts.filter((product) => {
-      // Price filter
       const price = product.price || 0
-      if (maxPrice > 0 && price > 0 && price > maxPrice * 3) {
-        // Soft match price check or if within range
+
+      // 1. Price filter (working on all categories)
+      if (minPrice > 0 && price < minPrice) {
+        return false
+      }
+      if (maxPrice > 0 && price > maxPrice) {
+        return false
       }
 
-      // Age filter - ONLY applicable for clothing categories
+      // 2. Age filter - ONLY applicable for clothing categories
       if (isClothingCategory && selectedAge !== 'all') {
-        const lowerSelected = selectedAge.toLowerCase().replace(/–/g, '-')
-        const shortDesc = (product.short_description || '').toLowerCase().replace(/–/g, '-')
-        const desc = (product.description || '').toLowerCase().replace(/–/g, '-')
-        const title = (product.title || '').toLowerCase().replace(/–/g, '-')
-        const categoryTag = (product.category_tag || '').toLowerCase().replace(/–/g, '-')
+        const norm = (s: string) =>
+          s
+            .toLowerCase()
+            .replace(/[\u2013\u2014–—]/g, '-')
+            .replace(/\s+/g, ' ')
+            .trim()
+
+        const target = norm(selectedAge) // e.g. "1-3"
+        const content = norm(
+          [
+            product.short_description,
+            product.description,
+            product.title,
+            product.category_tag,
+          ]
+            .filter(Boolean)
+            .join(' ')
+        )
 
         const matchesAge =
-          shortDesc.includes(lowerSelected) ||
-          desc.includes(lowerSelected) ||
-          title.includes(lowerSelected) ||
-          categoryTag.includes(lowerSelected)
+          content.includes(target) ||
+          content.includes(`${target}m`) ||
+          content.includes(`${target} month`)
 
         if (!matchesAge) {
           return false
@@ -272,25 +299,38 @@ export default function CategoryDetailClient({
                 )}
               </div>
 
-              {/* Exact Slider Bar from Figma (left:0px, #0067B2 track & circle endpoints) */}
+              {/* Interactive Slider Bar */}
               <div className="space-y-4">
-                <div className="relative h-1 w-full rounded-[20px] bg-[#E2E8F0]">
-                  {/* Active Bar */}
-                  <div
-                    className="absolute top-0 left-0 h-1 rounded-[20px] bg-[#0067B2] transition-all"
-                    style={{
-                      width: `${Math.min(100, Math.max(10, ((maxPrice || 860) / 1000) * 100))}%`,
-                    }}
+                <div className="relative h-6 flex items-center">
+                  <div className="relative h-1.5 w-full rounded-[20px] bg-[#E2E8F0]">
+                    {/* Active Bar */}
+                    <div
+                      className="absolute top-0 left-0 h-full rounded-[20px] bg-[#0067B2] transition-all"
+                      style={{
+                        width: `${Math.min(100, Math.max(0, ((maxPrice || 0) / (sliderMax || 1000)) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                  {/* Real Range Input Overlaid */}
+                  <input
+                    type="range"
+                    min={0}
+                    max={sliderMax}
+                    step={10}
+                    value={maxPrice || 0}
+                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="absolute inset-0 w-full opacity-0 cursor-ew-resize h-6 z-10"
+                    aria-label="Filter by maximum price"
                   />
                   {/* Left Thumb */}
-                  <div className="absolute -top-[5px] left-0 w-[15px] h-[14px] bg-[#0067B2] rounded-full flex items-center justify-center cursor-pointer shadow-xs">
+                  <div className="absolute top-1/2 -translate-y-1/2 left-0 w-[14px] h-[14px] bg-[#0067B2] rounded-full flex items-center justify-center pointer-events-none shadow-xs">
                     <div className="w-1 h-1 rounded-full bg-white" />
                   </div>
                   {/* Right Thumb (dynamic) */}
                   <div
-                    className="absolute -top-[5px] w-[15px] h-[14px] bg-[#0067B2] rounded-full flex items-center justify-center cursor-pointer shadow-xs transition-all"
+                    className="absolute top-1/2 -translate-y-1/2 w-[14px] h-[14px] bg-[#0067B2] rounded-full flex items-center justify-center pointer-events-none shadow-xs transition-all"
                     style={{
-                      left: `calc(${Math.min(95, Math.max(10, ((maxPrice || 860) / 1000) * 100))}% - 7px)`,
+                      left: `calc(${Math.min(100, Math.max(0, ((maxPrice || 0) / (sliderMax || 1000)) * 100))}% - 7px)`,
                     }}
                   >
                     <div className="w-1 h-1 rounded-full bg-white" />
@@ -298,12 +338,13 @@ export default function CategoryDetailClient({
                 </div>
 
                 {/* Min & Max Inputs (Exact Figma 138.52px x 40px, rounded-lg, #CBD5E1 border) */}
-                <div className="flex items-center gap-2 pt-2">
-                  <div className="w-[138px] h-10 px-3.5 flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-white shadow-2xs">
+                <div className="flex items-center gap-2 pt-1">
+                  <div className="w-[138px] h-10 px-3 flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-white shadow-2xs focus-within:border-[#0067B2] focus-within:ring-1 focus-within:ring-[#0067B2]">
+                    <span className="text-gray-400 text-xs font-semibold mr-1">₹</span>
                     <input
                       type="number"
-                      value={minPrice}
-                      onChange={(e) => setMinPrice(Number(e.target.value) || 0)}
+                      value={minPrice === 0 ? '' : minPrice}
+                      onChange={(e) => setMinPrice(Math.max(0, Number(e.target.value) || 0))}
                       className="w-full text-center font-poppins text-sm font-medium text-black focus:outline-none"
                       placeholder="0"
                       min={0}
@@ -314,13 +355,14 @@ export default function CategoryDetailClient({
                     -
                   </span>
 
-                  <div className="w-[138px] h-10 px-3.5 flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-white shadow-2xs">
+                  <div className="w-[138px] h-10 px-3 flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-white shadow-2xs focus-within:border-[#0067B2] focus-within:ring-1 focus-within:ring-[#0067B2]">
+                    <span className="text-gray-400 text-xs font-semibold mr-1">₹</span>
                     <input
                       type="number"
-                      value={maxPrice}
-                      onChange={(e) => setMaxPrice(Number(e.target.value) || 0)}
+                      value={maxPrice === 0 ? '' : maxPrice}
+                      onChange={(e) => setMaxPrice(Math.max(0, Number(e.target.value) || 0))}
                       className="w-full text-center font-poppins text-sm font-medium text-black focus:outline-none"
-                      placeholder="860"
+                      placeholder={String(sliderMax)}
                       min={0}
                     />
                   </div>
@@ -406,21 +448,29 @@ export default function CategoryDetailClient({
                   Filter by price
                 </h4>
                 <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(Number(e.target.value) || 0)}
-                    className="w-1/2 p-2 border border-gray-300 rounded-lg text-sm text-center font-poppins"
-                    placeholder="Min"
-                  />
+                  <div className="w-1/2 flex items-center border border-gray-300 rounded-lg px-2.5 py-2 bg-white">
+                    <span className="text-xs text-gray-400 mr-1">₹</span>
+                    <input
+                      type="number"
+                      value={minPrice === 0 ? '' : minPrice}
+                      onChange={(e) => setMinPrice(Math.max(0, Number(e.target.value) || 0))}
+                      className="w-full text-sm text-center font-poppins focus:outline-none"
+                      placeholder="0"
+                      min={0}
+                    />
+                  </div>
                   <span>-</span>
-                  <input
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(Number(e.target.value) || 0)}
-                    className="w-1/2 p-2 border border-gray-300 rounded-lg text-sm text-center font-poppins"
-                    placeholder="Max"
-                  />
+                  <div className="w-1/2 flex items-center border border-gray-300 rounded-lg px-2.5 py-2 bg-white">
+                    <span className="text-xs text-gray-400 mr-1">₹</span>
+                    <input
+                      type="number"
+                      value={maxPrice === 0 ? '' : maxPrice}
+                      onChange={(e) => setMaxPrice(Math.max(0, Number(e.target.value) || 0))}
+                      className="w-full text-sm text-center font-poppins focus:outline-none"
+                      placeholder={String(sliderMax)}
+                      min={0}
+                    />
+                  </div>
                 </div>
               </div>
 
