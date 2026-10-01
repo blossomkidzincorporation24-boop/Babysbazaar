@@ -15,6 +15,7 @@ import type { Metadata } from 'next'
 import { getSiteUrl, generateBreadcrumbSchema } from '@/lib/seo'
 import JsonLd from '@/components/seo/JsonLd'
 import Footer from '@/components/user/Footer'
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'All Baby Product Categories | Erode',
@@ -67,10 +68,11 @@ export default async function CategoriesPage({
     search && search.trim()
       ? supabase
           .from('products')
-          .select('id, title, slug, price, product_images, description, categories(name, slug)')
+          .select('id, title, slug, price, product_images, description, short_description, new_arrival, best_seller, categories(name, slug)')
           .eq('status', 'active')
-          .or(`title.ilike.%${search.trim()}%,description.ilike.%${search.trim()}%`)
-          .limit(24)
+          .or(`title.ilike.%${search.trim()}%,description.ilike.%${search.trim()}%,short_description.ilike.%${search.trim()}%`)
+          .order('created_at', { ascending: false })
+          .limit(40)
       : Promise.resolve({ data: [] }),
   ])
 
@@ -147,9 +149,10 @@ export default async function CategoriesPage({
                   View All Categories
                 </Link>
                 <a
-                  href={`https://wa.me/918489824888?text=${encodeURIComponent(`Hi Baby's Bazaar, I am looking for: ${search}`)}`}
+                  href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hi Baby's Bazaar, I am looking for: ${search}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Ask about this product on WhatsApp"
                   className="px-5 py-2.5 rounded-full bg-[#25D366] text-white text-xs font-semibold hover:bg-[#20bd5a] transition-colors"
                 >
                   Ask on WhatsApp

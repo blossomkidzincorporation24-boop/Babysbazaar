@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Home, ShoppingBag, Search, Menu, MessageCircle, X } from 'lucide-react'
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
 interface MobileBottomNavProps {
   whatsappNumber?: string | null
@@ -16,7 +17,7 @@ export default function MobileBottomNav({ whatsappNumber }: MobileBottomNavProps
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const whatsappUrl = `https://wa.me/${cleanWhatsApp}?text=${encodeURIComponent("Hi Baby's Bazaar, I want to inquire about your products.")}`
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -46,13 +47,20 @@ export default function MobileBottomNav({ whatsappNumber }: MobileBottomNavProps
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
-                placeholder="Search cute things..."
+                placeholder="Search products, toys..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="w-full pl-10 pr-4 py-3 rounded-full bg-[#FAF0F4] border border-pink-200 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]"
+                className="w-full pl-10 pr-10 py-3 rounded-full bg-[#FAF0F4] border border-pink-200 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]"
+                aria-label="Search products on mobile"
               />
-              <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#FF2E63]" />
+              <button
+                type="submit"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#FF2E63] p-1 cursor-pointer"
+                aria-label="Search"
+              >
+                <Search size={18} />
+              </button>
             </form>
           </div>
         </div>

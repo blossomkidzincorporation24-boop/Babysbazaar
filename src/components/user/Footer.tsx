@@ -4,6 +4,16 @@ import Link from 'next/link'
 import BabyBazaarLogo from '@/components/admin/BabyBazaarLogo'
 import { MapPin, Phone } from 'lucide-react'
 import Container from '@/components/ui/Container'
+import {
+  BUSINESS_ADDRESS,
+  BUSINESS_PHONE_DISPLAY,
+  BUSINESS_PHONE_TEL,
+  BUSINESS_GOOGLE_MAPS_URL,
+  BUSINESS_INSTAGRAM_URL,
+  BUSINESS_TWITTER_URL,
+  BUSINESS_WHATSAPP_NUMBER,
+  BUSINESS_TAGLINE,
+} from '@/lib/constants'
 
 interface FooterProps {
   settings?: {
@@ -15,9 +25,11 @@ interface FooterProps {
 }
 
 export default function Footer({ settings }: FooterProps) {
-  const cleanPhone = settings?.phone || '+91 84898 24888'
-  const address = settings?.address || '60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011'
-  const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(address)}`
+  const cleanPhone = settings?.phone || BUSINESS_PHONE_DISPLAY
+  const phoneTel = `tel:${cleanPhone.replace(/[^+\d]/g, '') || '+918489824888'}`
+  const address = settings?.address || BUSINESS_ADDRESS
+  const mapUrl = settings?.address ? `https://maps.google.com/?q=${encodeURIComponent(settings.address)}` : BUSINESS_GOOGLE_MAPS_URL
+  const waNumber = settings?.whatsapp_number?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
 
   return (
     <footer className="w-full bg-[#FBE6ED] border-t border-[#F2D0DC] text-[#121212] select-none">
@@ -26,11 +38,11 @@ export default function Footer({ settings }: FooterProps) {
           {/* Column 1: Brand Info & Socials */}
           <div className="flex flex-col justify-between space-y-6">
             <div className="space-y-5">
-              <Link href="/" className="inline-block hover:opacity-95 transition-opacity">
+              <Link href="/" className="inline-block hover:opacity-95 transition-opacity" aria-label="Baby's Bazaar Home">
                 <BabyBazaarLogo className="h-12 sm:h-14" width={160} height={70} />
               </Link>
               <p className="font-roboto-slab text-base sm:text-lg text-black leading-relaxed font-normal max-w-sm">
-                Your premium destination for quality products. Experience shopping redefined with style and elegance.
+                {BUSINESS_TAGLINE}
               </p>
             </div>
 
@@ -42,10 +54,10 @@ export default function Footer({ settings }: FooterProps) {
               <div className="flex items-center gap-3">
                 {/* Instagram */}
                 <a
-                  href="https://instagram.com"
+                  href={BUSINESS_INSTAGRAM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Instagram"
+                  aria-label="Open Baby's Bazaar on Instagram"
                   className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-xs hover:shadow-md transition-all hover:scale-105"
                 >
                   <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,10 +70,10 @@ export default function Footer({ settings }: FooterProps) {
 
                 {/* WhatsApp */}
                 <a
-                  href={`https://wa.me/${cleanPhone.replace(/\D/g, '')}`}
+                  href={`https://wa.me/${waNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="WhatsApp"
+                  aria-label="Open Baby's Bazaar on WhatsApp"
                   className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-xs hover:shadow-md transition-all hover:scale-105"
                 >
                   <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,10 +86,10 @@ export default function Footer({ settings }: FooterProps) {
 
                 {/* Twitter / X */}
                 <a
-                  href="https://twitter.com"
+                  href={BUSINESS_TWITTER_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="X"
+                  aria-label="Open Baby's Bazaar on X"
                   className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-xs hover:shadow-md transition-all hover:scale-105"
                 >
                   <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -91,7 +103,7 @@ export default function Footer({ settings }: FooterProps) {
             </div>
           </div>
 
-          {/* Column 2: Quick Links 1 */}
+          {/* Column 2: Quick Links */}
           <div className="space-y-4 sm:pl-4">
             <h4 className="font-roboto-slab text-base sm:text-lg font-bold text-black">
               Quick Links
@@ -113,9 +125,9 @@ export default function Footer({ settings }: FooterProps) {
                 </Link>
               </li>
               <li>
-                <a href="#faq" className="hover:text-[#F40436] transition-colors">
+                <Link href="/#faq" className="hover:text-[#F40436] transition-colors">
                   FAQs
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -127,24 +139,29 @@ export default function Footer({ settings }: FooterProps) {
             </h4>
             <ul className="space-y-3 font-roboto-slab text-base text-black/85">
               <li>
-                <a href="#best-sellers" className="hover:text-[#F40436] transition-colors">
+                <Link href="/toys" className="hover:text-[#F40436] transition-colors">
+                  Toys Collection
+                </Link>
+              </li>
+              <li>
+                <Link href="/#best-sellers" className="hover:text-[#F40436] transition-colors">
                   Best Sellers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#new-arrivals" className="hover:text-[#F40436] transition-colors">
+                <Link href="/#new-arrivals" className="hover:text-[#F40436] transition-colors">
                   New Arrivals
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#photos" className="hover:text-[#F40436] transition-colors">
-                  Photos
-                </a>
+                <Link href="/#photos" className="hover:text-[#F40436] transition-colors">
+                  Customer Moments
+                </Link>
               </li>
               <li>
-                <a href="#reels" className="hover:text-[#F40436] transition-colors">
-                  Reels
-                </a>
+                <Link href="/#reels" className="hover:text-[#F40436] transition-colors">
+                  Trending Reels
+                </Link>
               </li>
             </ul>
           </div>
@@ -169,6 +186,7 @@ export default function Footer({ settings }: FooterProps) {
                 href={mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Open Baby's Bazaar location in Google Maps"
                 className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#E21352] hover:bg-[#C2103F] active:scale-95 text-white font-roboto-slab text-sm font-semibold shadow-xs transition-all cursor-pointer"
               >
                 <MapPin size={18} />
@@ -183,9 +201,13 @@ export default function Footer({ settings }: FooterProps) {
                 <span className="font-roboto-slab text-xs font-semibold uppercase tracking-widest text-black/70 block">
                   PHONE
                 </span>
-                <span className="font-roboto-slab text-sm sm:text-base font-normal text-black block mt-0.5">
+                <a
+                  href={phoneTel}
+                  className="font-roboto-slab text-sm sm:text-base font-normal text-black hover:text-[#E21352] transition-colors block mt-0.5"
+                  aria-label={`Call Baby's Bazaar at ${cleanPhone}`}
+                >
                   {cleanPhone}
-                </span>
+                </a>
               </div>
             </div>
           </div>
@@ -193,10 +215,11 @@ export default function Footer({ settings }: FooterProps) {
 
         {/* Bottom Copyright Bar */}
         <div className="pt-8 border-t border-[#F2D0DC] flex flex-col sm:flex-row items-center justify-between gap-4 font-roboto-slab text-sm text-[#121212]">
-          <p>© 2026 DSTUDIOOS. All rights reserved.</p>
-          <p className="text-right">Copyright Company</p>
+          <p>© 2026 Baby&apos;s Bazaar. All rights reserved.</p>
+          <p className="text-gray-600 text-xs sm:text-sm">Erode, Tamil Nadu, India</p>
         </div>
       </Container>
     </footer>
   )
 }
+

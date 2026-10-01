@@ -16,6 +16,15 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 
+import {
+  BUSINESS_NAME,
+  BUSINESS_ADDRESS,
+  BUSINESS_PHONE_DISPLAY,
+  BUSINESS_EMAIL,
+  BUSINESS_WHATSAPP_NUMBER,
+  BUSINESS_GOOGLE_MAPS_URL,
+} from '@/lib/constants'
+
 interface ContactUsClientProps {
   settings?: {
     store_name?: string | null
@@ -27,15 +36,12 @@ interface ContactUsClientProps {
 }
 
 export default function ContactUsClient({ settings }: ContactUsClientProps) {
-  const storeName = settings?.store_name || "Baby's Bazaar"
-  const rawWhatsApp = settings?.whatsapp_number || '918489824888'
-  const cleanWhatsApp = rawWhatsApp.replace(/\D/g, '') || '918489824888'
-  const storePhone = settings?.phone || '+91 84898 24888'
-  const storeEmail = settings?.email || 'support@babysbazaar.shop'
-  const storeAddress =
-    settings?.address ||
-    '60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011'
-  const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(storeAddress)}`
+  const storeName = settings?.store_name || BUSINESS_NAME
+  const cleanWhatsApp = settings?.whatsapp_number?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
+  const storePhone = settings?.phone || BUSINESS_PHONE_DISPLAY
+  const storeEmail = settings?.email || BUSINESS_EMAIL
+  const storeAddress = settings?.address || BUSINESS_ADDRESS
+  const mapUrl = settings?.address ? `https://maps.google.com/?q=${encodeURIComponent(settings.address)}` : BUSINESS_GOOGLE_MAPS_URL
 
   // WhatsApp chat link
   const defaultWhatsAppUrl = `https://wa.me/${cleanWhatsApp}?text=${encodeURIComponent(

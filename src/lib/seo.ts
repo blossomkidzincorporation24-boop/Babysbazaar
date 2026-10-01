@@ -1,9 +1,18 @@
+import {
+  BUSINESS_NAME,
+  BUSINESS_ADDRESS,
+  BUSINESS_PHONE_DISPLAY,
+  BUSINESS_EMAIL,
+  BUSINESS_WHATSAPP_NUMBER,
+  CANONICAL_DOMAIN,
+} from '@/lib/constants'
+
 export function getSiteUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL
   if (envUrl) {
     return envUrl.replace(/\/+$/, '')
   }
-  return 'https://babysbazaar.shop'
+  return CANONICAL_DOMAIN
 }
 
 export function buildCanonicalUrl(path: string = ''): string {
@@ -40,9 +49,9 @@ export function generateLocalBusinessSchema(settings?: {
   whatsapp_number?: string | null
 } | null) {
   const siteUrl = getSiteUrl()
-  const storeName = settings?.store_name || "Baby's Bazaar"
-  const phone = settings?.phone || settings?.whatsapp_number || '+91 84898 24888'
-  const email = settings?.email || 'support@babysbazaar.shop'
+  const storeName = settings?.store_name || BUSINESS_NAME
+  const phone = settings?.phone || settings?.whatsapp_number || BUSINESS_PHONE_DISPLAY
+  const email = settings?.email || BUSINESS_EMAIL
   const logo = settings?.logo || `${siteUrl}/logo.png`
 
   return {
@@ -160,8 +169,8 @@ export function generateProductSchema(product: {
       itemCondition: 'https://schema.org/NewCondition',
       seller: {
         '@type': 'Store',
-        name: "Baby's Bazaar",
-        telephone: '+91 84898 24888',
+        name: BUSINESS_NAME,
+        telephone: BUSINESS_PHONE_DISPLAY,
       },
     },
   }

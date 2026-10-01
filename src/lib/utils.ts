@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -37,7 +38,7 @@ export function buildWhatsAppEnquiryUrl({
   variant?: string | null
   productUrl?: string
 }): string {
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const formattedPrice =
     typeof price === 'number'
       ? `₹${price.toLocaleString('en-IN')}`

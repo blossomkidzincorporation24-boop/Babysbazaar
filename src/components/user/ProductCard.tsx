@@ -90,6 +90,7 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
           href={waUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`Enquire about ${product.title} on WhatsApp`}
           className="inline-flex items-center justify-center gap-1 sm:gap-1.5 bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white font-sans text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full shadow-xs transition-all cursor-pointer shrink-0"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" className="shrink-0">

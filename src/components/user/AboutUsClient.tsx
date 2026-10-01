@@ -150,8 +150,10 @@ const WHY_US_FEATURES = [
   },
 ]
 
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
+
 export default function AboutUsClient({ whatsappNumber, photos = [] }: AboutUsClientProps) {
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
     "Hi Baby's Bazaar, I'd like to chat and know more about your collection!"
   )}`

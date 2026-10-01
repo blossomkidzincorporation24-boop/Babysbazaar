@@ -12,6 +12,7 @@ import {
   ShoppingBag,
 } from 'lucide-react'
 import MobileBottomNav from '@/components/user/MobileBottomNav'
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
 interface NavbarProps {
   whatsappNumber?: string | null
@@ -24,7 +25,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const cleanWhatsApp = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const whatsappUrl = `https://wa.me/${cleanWhatsApp}?text=${encodeURIComponent("Hi Baby's Bazaar, I want to inquire about your products.")}`
 
   // Scroll listener for dynamic sticky header
@@ -65,7 +66,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             
             {/* LEFT: Logo & New Arrivals Badge */}
             <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition-opacity">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition-opacity" aria-label="Baby's Bazaar Home">
                 <div className="relative w-28 sm:w-36 h-10 sm:h-12">
                   <Image
                     src="/logo.png"
@@ -89,7 +90,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             </div>
 
             {/* CENTER: Direct Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
+            <nav className="hidden lg:flex items-center gap-7 xl:gap-9" aria-label="Main Navigation">
               {navLinks.map((link) => {
                 const isActive =
                   link.href === '/'
@@ -98,6 +99,8 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                     ? pathname === '/about-us' || pathname === '/about'
                     : link.href === '/contact'
                     ? pathname === '/contact' || pathname === '/contact-us'
+                    : link.href === '/toys'
+                    ? pathname.startsWith('/toys')
                     : pathname.startsWith('/category') || pathname.startsWith('/categories')
                 return (
                   <Link
@@ -120,19 +123,33 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
 
             {/* RIGHT: Search Bar & Shop Now Action Button */}
             <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-              {/* Search Input */}
+              {/* Search Input Form */}
               <form onSubmit={handleSearch} className="relative hidden md:block">
                 <input
                   type="text"
-                  placeholder="Search cute things..."
+                  placeholder="Search products, toys..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-44 lg:w-56 pl-9 pr-4 py-2 rounded-full bg-gray-100 border border-gray-200 text-xs sm:text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]/30 transition-all"
+                  className="w-44 lg:w-56 pl-9 pr-8 py-2 rounded-full bg-gray-100 border border-gray-200 text-xs sm:text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]/30 transition-all"
+                  aria-label="Search products"
                 />
-                <Search
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#FF2E63]"
-                />
+                <button
+                  type="submit"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#FF2E63] hover:scale-110 transition-transform cursor-pointer p-0.5"
+                  aria-label="Search"
+                >
+                  <Search size={16} />
+                </button>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer text-xs"
+                    aria-label="Clear search text"
+                  >
+                    ✕
+                  </button>
+                )}
               </form>
 
               {/* Primary Action Button: "🛍️ Shop Now" Pill Button */}
@@ -147,8 +164,8 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
               {/* Mobile Hamburger Toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-gray-700 hover:text-[#FF2E63] lg:hidden cursor-pointer"
-                aria-label="Toggle menu"
+                className="p-2 text-gray-700 hover:text-[#FF2E63] lg:hidden cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label="Toggle navigation menu"
               >
                 {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -161,12 +178,19 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
-                  placeholder="Search cute things..."
+                  placeholder="Search products, toys..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 rounded-full bg-gray-100 border border-gray-200 text-xs text-gray-700"
+                  className="w-full pl-9 pr-8 py-2.5 rounded-full bg-gray-100 border border-gray-200 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]"
+                  aria-label="Search products on mobile"
                 />
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#FF2E63]" />
+                <button
+                  type="submit"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#FF2E63] cursor-pointer"
+                  aria-label="Submit search"
+                >
+                  <Search size={16} />
+                </button>
               </form>
 
               <div className="flex flex-col gap-2 pt-1 border-t border-gray-100">
@@ -183,6 +207,13 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                   className="py-2 px-3 rounded-lg text-sm font-semibold text-gray-800 hover:bg-pink-50 hover:text-[#FF2E63]"
                 >
                   Categories
+                </Link>
+                <Link
+                  href="/toys"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2 px-3 rounded-lg text-sm font-semibold text-gray-800 hover:bg-pink-50 hover:text-[#FF2E63]"
+                >
+                  🧸 Toys Collection
                 </Link>
                 <Link
                   href="/category/new-clothings"
@@ -212,14 +243,15 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-2.5 rounded-full bg-[#25D366] text-white text-xs font-semibold text-center shadow-xs"
+                  aria-label="Open WhatsApp Chat"
+                  className="flex-1 py-2.5 rounded-full bg-[#25D366] text-white text-xs font-semibold text-center shadow-xs cursor-pointer min-h-[44px] flex items-center justify-center"
                 >
                   WhatsApp Us
                 </a>
                 <Link
                   href="/categories"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2.5 rounded-full bg-[#FF2E63] text-white text-xs font-semibold text-center shadow-xs"
+                  className="flex-1 py-2.5 rounded-full bg-[#FF2E63] text-white text-xs font-semibold text-center shadow-xs cursor-pointer min-h-[44px] flex items-center justify-center"
                 >
                   Shop Now
                 </Link>

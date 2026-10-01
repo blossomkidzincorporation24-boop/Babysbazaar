@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Play, Heart, MessageCircle, X, Share2, ChevronLeft, ChevronRight } from 'lucide-react'
 import Container from '@/components/ui/Container'
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
 export interface ReelItem {
   id: string
@@ -27,7 +28,7 @@ export default function ReelsSection({ reels = [], whatsappNumber }: ReelsSectio
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
   const [likedReels, setLikedReels] = useState<Record<string, boolean>>({})
 
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const displayReels = (reels || []).filter(Boolean)
 
   const checkScroll = () => {

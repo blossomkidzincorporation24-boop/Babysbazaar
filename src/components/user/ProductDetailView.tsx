@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ShieldCheck, Sparkles, Eye } from 'lucide-react'
 import { buildWhatsAppEnquiryUrl } from '@/lib/utils'
 import { getSiteUrl } from '@/lib/seo'
+import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
 export interface DetailedProduct {
   id: string
@@ -40,7 +41,7 @@ export default function ProductDetailView({
   whatsappNumber,
   bestSellers = [],
 }: ProductDetailViewProps) {
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
 
   const images = product.product_images && product.product_images.length > 0
     ? product.product_images
