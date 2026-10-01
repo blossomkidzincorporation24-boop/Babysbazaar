@@ -67,6 +67,8 @@ export async function updatePassword(currentPassword: string, newPassword: strin
   return { success: true }
 }
 
+import { BUSINESS_ADDRESS } from '@/lib/constants'
+
 export async function getPublicSettings() {
   const supabase = await createClient()
   const { data } = await supabase
@@ -74,5 +76,12 @@ export async function getPublicSettings() {
     .select('store_name, logo, whatsapp_number, phone, email, address')
     .limit(1)
     .single()
+
+  if (data) {
+    if (!data.address || data.address.includes('60, Perundurai') || data.address.includes('60 Perundurai')) {
+      data.address = BUSINESS_ADDRESS
+    }
+  }
+
   return data
 }

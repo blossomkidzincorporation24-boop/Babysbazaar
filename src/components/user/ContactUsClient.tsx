@@ -40,8 +40,9 @@ export default function ContactUsClient({ settings }: ContactUsClientProps) {
   const cleanWhatsApp = settings?.whatsapp_number?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const storePhone = settings?.phone || BUSINESS_PHONE_DISPLAY
   const storeEmail = settings?.email || BUSINESS_EMAIL
-  const storeAddress = settings?.address || BUSINESS_ADDRESS
-  const mapUrl = settings?.address ? `https://maps.google.com/?q=${encodeURIComponent(settings.address)}` : BUSINESS_GOOGLE_MAPS_URL
+  const rawAddress = settings?.address || BUSINESS_ADDRESS
+  const storeAddress = rawAddress.includes('60, Perundurai') || rawAddress.includes('60 Perundurai') ? BUSINESS_ADDRESS : rawAddress
+  const mapUrl = storeAddress ? `https://maps.google.com/?q=${encodeURIComponent(storeAddress)}` : BUSINESS_GOOGLE_MAPS_URL
 
   // WhatsApp chat link
   const defaultWhatsAppUrl = `https://wa.me/${cleanWhatsApp}?text=${encodeURIComponent(

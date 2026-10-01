@@ -27,8 +27,9 @@ interface FooterProps {
 export default function Footer({ settings }: FooterProps) {
   const cleanPhone = settings?.phone || BUSINESS_PHONE_DISPLAY
   const phoneTel = `tel:${cleanPhone.replace(/[^+\d]/g, '') || '+918489824888'}`
-  const address = settings?.address || BUSINESS_ADDRESS
-  const mapUrl = settings?.address ? `https://maps.google.com/?q=${encodeURIComponent(settings.address)}` : BUSINESS_GOOGLE_MAPS_URL
+  const rawAddress = settings?.address || BUSINESS_ADDRESS
+  const address = rawAddress.includes('60, Perundurai') || rawAddress.includes('60 Perundurai') ? BUSINESS_ADDRESS : rawAddress
+  const mapUrl = address ? `https://maps.google.com/?q=${encodeURIComponent(address)}` : BUSINESS_GOOGLE_MAPS_URL
   const waNumber = settings?.whatsapp_number?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
 
   return (
