@@ -64,16 +64,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .eq('status', 'active'),
     ])
 
+    const toySubcategorySlugs = new Set([
+      'baby-toys',
+      'educational-toys',
+      'remote-control-toys',
+      'cars-and-vehicles',
+      'dolls-and-pretend-play',
+      'building-toys',
+      'musical-toys',
+      'outdoor-toys',
+      'soft-toys',
+      'activity-and-puzzle',
+      'ride-on-toys',
+    ])
+
     const categoryRoutes: MetadataRoute.Sitemap =
       categoriesRes.status === 'fulfilled' && categoriesRes.value.data
         ? categoriesRes.value.data
-            .filter((c) => Boolean(c.slug))
-            .map((c) => ({
-              url: `${siteUrl}/category/${c.slug}`,
-              lastModified: c.updated_at ? new Date(c.updated_at) : (c.created_at ? new Date(c.created_at) : now),
-              changeFrequency: 'weekly',
-              priority: 0.8,
-            }))
+            .filter((c) => Boolean(c.slug) && c.slug !== 'toys')
+            .map((c) => {
+              const url = toySubcategorySlugs.has(c.slug)
+                ? `${siteUrl}/toys/${c.slug}`
+                : `${siteUrl}/category/${c.slug}`
+              return {
+                url,
+                lastModified: c.updated_at ? new Date(c.updated_at) : (c.created_at ? new Date(c.created_at) : now),
+                changeFrequency: 'weekly' as const,
+                priority: 0.8,
+              }
+            })
         : []
 
     const productRoutes: MetadataRoute.Sitemap =
@@ -83,7 +102,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .map((p) => ({
               url: `${siteUrl}/product/${p.slug}`,
               lastModified: p.updated_at ? new Date(p.updated_at) : (p.created_at ? new Date(p.created_at) : now),
-              changeFrequency: 'weekly',
+              changeFrequency: 'weekly' as const,
               priority: 0.7,
             }))
         : []

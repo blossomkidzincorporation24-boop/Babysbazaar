@@ -24,7 +24,7 @@ export default function ToyCategoryCard({ category }: Props) {
         {category.image ? (
           <Image
             src={category.image}
-            alt={category.name}
+            alt={`${category.name} toys - Baby's Bazaar Erode`}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover object-center group-hover:scale-106 transition-transform duration-500"

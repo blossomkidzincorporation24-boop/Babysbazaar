@@ -9,25 +9,26 @@ import ToyCategoryCard from '@/components/toys/ToyCategoryCard'
 import ProductCard from '@/components/user/ProductCard'
 import { getPublicSettings } from '@/lib/actions/settings'
 import { getToySubcategories, getAllToyProducts } from '@/lib/actions/toys'
-import { getSiteUrl } from '@/lib/seo'
+import { getSiteUrl, generateBreadcrumbSchema, generateItemListSchema } from '@/lib/seo'
+import JsonLd from '@/components/seo/JsonLd'
 import { Sparkles, ArrowRight, Grid, Heart } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: "Baby & Kids Toys | Fun, Learn & Grow | Baby's Bazaar",
+  title: "Baby & Kids Toys in Erode | Baby's Bazaar",
   description:
-    "Explore baby toys, educational STEM toys, remote control cars, building blocks, musical toys, and soft plushies at Baby's Bazaar in Erode. Direct WhatsApp enquiry & fast dispatch.",
+    "Explore baby toys, educational STEM toys, remote control cars, building blocks, musical toys, and soft plushies at Baby's Bazaar in Erode. Direct WhatsApp enquiry.",
   alternates: {
     canonical: `${getSiteUrl()}/toys`,
   },
   openGraph: {
-    title: "Baby & Kids Toys | Baby's Bazaar",
+    title: "Baby & Kids Toys in Erode | Baby's Bazaar",
     description:
-      "Explore curated toys for curious minds: baby toys, educational STEM, RC vehicles, building blocks & more.",
+      "Explore curated baby and kids toys in Erode: educational STEM, RC vehicles, building blocks, soft toys & more.",
     url: `${getSiteUrl()}/toys`,
     images: [
       {
         url: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=1200&q=85',
-        alt: "Baby's Bazaar Toys Collection",
+        alt: "Baby's Bazaar Toys Collection in Erode",
       },
     ],
   },
@@ -76,7 +77,7 @@ export default async function ToysLandingPage() {
                 </span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 font-roboto-slab tracking-tight">
-                Shop by Category
+                Shop Toys by Category in Erode
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-gray-500 font-medium">
@@ -104,7 +105,7 @@ export default async function ToysLandingPage() {
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 font-roboto-slab">
-                  Popular in Toys
+                  Popular Kids & Baby Toys in Erode
                 </h3>
               </div>
             </div>
@@ -124,6 +125,25 @@ export default async function ToysLandingPage() {
 
       {/* Footer */}
       <Footer settings={settings} />
+
+      {/* SEO: BreadcrumbList & ItemList Structured Data */}
+      <JsonLd
+        data={[
+          generateBreadcrumbSchema([
+            { name: 'Home', url: '/' },
+            { name: 'Categories', url: '/categories' },
+            { name: 'Toys', url: '/toys' },
+          ]),
+          generateItemListSchema(
+            "Baby & Kids Toys in Erode - Baby's Bazaar",
+            subcategories.map((sub) => ({
+              name: sub.name,
+              url: `/toys/${sub.slug}`,
+              image: sub.image,
+            }))
+          ),
+        ]}
+      />
     </div>
   )
 }

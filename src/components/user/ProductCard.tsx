@@ -54,7 +54,7 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
         <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-50 mb-2.5 sm:mb-3 shrink-0">
           <Image
             src={imageUrl}
-            alt={product.title}
+            alt={`${product.title} - Baby's Bazaar Erode`}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover object-center group-hover/link:scale-105 transition-transform duration-300"

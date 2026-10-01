@@ -10,16 +10,16 @@ import Footer from '@/components/user/Footer'
 import AboutUsClient from '@/components/user/AboutUsClient'
 
 export const metadata: Metadata = {
-  title: 'About Us',
+  title: "About Us | Baby Store in Erode | Baby's Bazaar",
   description:
-    "Learn about Baby's Bazaar in Erode, Tamil Nadu — our story, commitment to baby-safe essentials, organic materials, and friendly WhatsApp assistance for mothers and infants.",
+    "Learn about Baby's Bazaar in Erode, Tamil Nadu — our story, commitment to baby-safe essentials, newborn clothes, toys, and friendly WhatsApp assistance.",
   alternates: {
     canonical: `${getSiteUrl()}/about-us`,
   },
   openGraph: {
-    title: "About Us | Baby's Bazaar Erode",
+    title: "About Us | Baby Store in Erode | Baby's Bazaar",
     description:
-      "Learn about Baby's Bazaar in Erode, Tamil Nadu — our story, commitment to baby-safe essentials, organic materials, and friendly WhatsApp assistance.",
+      "Learn about Baby's Bazaar in Erode, Tamil Nadu — our story, commitment to baby-safe essentials, newborn clothes, toys, and friendly WhatsApp assistance.",
     url: `${getSiteUrl()}/about-us`,
   },
 }

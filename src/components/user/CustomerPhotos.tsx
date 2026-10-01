@@ -124,7 +124,7 @@ export default function CustomerPhotos({ photos = [] }: CustomerPhotosProps) {
                     <div className="group relative aspect-[3/4.2] w-full rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 bg-gray-100 border border-gray-100">
                       <Image
                         src={item.image}
-                        alt={item.caption || 'Loved by Little Ones customer photo'}
+                        alt={item.caption || "Loved by Little Ones - Baby's Bazaar Erode"}
                         fill
                         sizes="(max-width: 640px) 75vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"

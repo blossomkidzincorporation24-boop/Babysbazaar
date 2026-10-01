@@ -22,20 +22,20 @@ import Container from '@/components/ui/Container'
 import NewArrivalsSlider from '@/components/user/NewArrivalsSlider'
 import BestSellersSlider from '@/components/user/BestSellersSlider'
 import type { Metadata } from 'next'
-import { getSiteUrl, generateLocalBusinessSchema } from '@/lib/seo'
+import { getSiteUrl, generateLocalBusinessSchema, generateWebSiteSchema } from '@/lib/seo'
 import JsonLd from '@/components/seo/JsonLd'
 
 export const metadata: Metadata = {
-  title: "Baby Products Shop in Erode | Baby's Bazaar",
+  title: "Baby's Bazaar | Baby Store in Erode | Baby Products & Toys",
   description:
-    "Explore Baby's Bazaar in Erode, Tamil Nadu. Quality newborn essentials, organic baby clothing, bedding, and nursery accessories with easy WhatsApp enquiry.",
+    "Baby's Bazaar is a baby store in Erode offering baby clothes, newborn essentials, baby care products, toys and kids essentials with easy WhatsApp enquiry.",
   alternates: {
     canonical: getSiteUrl(),
   },
   openGraph: {
-    title: "Baby Products Shop in Erode | Baby's Bazaar",
+    title: "Baby's Bazaar | Baby Store in Erode | Baby Products & Toys",
     description:
-      "Explore Baby's Bazaar in Erode, Tamil Nadu. Quality newborn essentials, baby clothing, bedding, and nursery accessories.",
+      "Baby's Bazaar is a baby store in Erode offering baby clothes, newborn essentials, baby care products, toys and kids essentials.",
     url: getSiteUrl(),
   },
 }
@@ -176,8 +176,8 @@ export default async function UserHomePage() {
       {/* 12. Footer */}
       <Footer settings={settings} />
 
-      {/* SEO: Structured Data for LocalBusiness */}
-      <JsonLd data={generateLocalBusinessSchema(settings)} />
+      {/* SEO: Structured Data for LocalBusiness & WebSite */}
+      <JsonLd data={[generateLocalBusinessSchema(settings), generateWebSiteSchema()]} />
     </div>
   )
 }

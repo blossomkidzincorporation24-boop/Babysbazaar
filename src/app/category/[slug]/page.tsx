@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getPublicSettings } from '@/lib/actions/settings'
-import { getSiteUrl, generateBreadcrumbSchema } from '@/lib/seo'
+import { getSiteUrl, generateBreadcrumbSchema, generateItemListSchema } from '@/lib/seo'
 import JsonLd from '@/components/seo/JsonLd'
 import Navbar from '@/components/user/Navbar'
 import Footer from '@/components/user/Footer'
@@ -27,7 +27,7 @@ const LEGACY_SLUG_MAP: Record<string, string> = {
 // Helper to format slug to human-readable title (e.g. new-clothings -> "New clothings")
 function formatSlugToTitle(slug: string): string {
   if (slug === 'new-clothings') return 'New Clothings'
-  if (slug === 'baby-clothes') return 'Baby Clothes'
+  if (slug === 'clothing' || slug === 'baby-clothes') return 'Baby Clothes'
   if (slug === 'baby-toys') return 'Baby Toys'
   if (slug === 'baby-feeding' || slug === 'babys-feeding') return "Baby's Feeding"
   if (slug.includes('bed')) return "Baby's Beds & Bedding"
@@ -60,10 +60,10 @@ export async function generateMetadata({
     .maybeSingle()
 
   const name = category?.name || formatSlugToTitle(slug)
-  const title = `${name} in Erode`
+  const title = `${name} in Erode | Baby's Bazaar`
   const description =
     category?.description ||
-    `Explore quality ${name.toLowerCase()} at Baby's Bazaar in Erode, Tamil Nadu. Browse our curated collection and enquire directly via WhatsApp.`
+    `Shop quality ${name.toLowerCase()} in Erode at Baby's Bazaar. Curated newborn essentials, baby clothes & products with instant WhatsApp enquiry.`
   const canonicalUrl = `${getSiteUrl()}/category/${slug}`
   const image = category?.image || `${getSiteUrl()}/babys-bazaar-logo.png`
 
@@ -187,13 +187,24 @@ export default async function CategoryPage({
       {/* Footer */}
       <Footer settings={settings} />
 
-      {/* SEO: BreadcrumbList Structured Data */}
+      {/* SEO: BreadcrumbList & ItemList Structured Data */}
       <JsonLd
-        data={generateBreadcrumbSchema([
-          { name: 'Home', url: '/' },
-          { name: 'Categories', url: '/categories' },
-          { name: displayName, url: `/category/${slug}` },
-        ])}
+        data={[
+          generateBreadcrumbSchema([
+            { name: 'Home', url: '/' },
+            { name: 'Categories', url: '/categories' },
+            { name: displayName, url: `/category/${slug}` },
+          ]),
+          generateItemListSchema(
+            `${displayName} - Baby's Bazaar Erode`,
+            categoryProducts.map((p) => ({
+              name: p.title,
+              url: `/product/${p.slug}`,
+              image: p.product_images?.[0],
+              price: p.price,
+            }))
+          ),
+        ]}
       />
     </div>
   )

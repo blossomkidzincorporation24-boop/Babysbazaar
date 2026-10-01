@@ -13,7 +13,8 @@ import {
   getToySubcategoryProducts,
 } from '@/lib/actions/toys'
 import { cleanToyDescription } from '@/lib/utils'
-import { getSiteUrl } from '@/lib/seo'
+import { getSiteUrl, generateBreadcrumbSchema, generateItemListSchema } from '@/lib/seo'
+import JsonLd from '@/components/seo/JsonLd'
 
 export async function generateMetadata({
   params,
@@ -37,7 +38,7 @@ export async function generateMetadata({
   const title = `${subcategory.name} in Erode | Baby's Bazaar Toys`
   const description =
     cleanDesc ||
-    `Explore quality ${subcategory.name.toLowerCase()} at Baby's Bazaar in Erode, Tamil Nadu. Browse our collection and enquire directly via WhatsApp.`
+    `Shop quality ${subcategory.name.toLowerCase()} in Erode at Baby's Bazaar. Browse our collection and enquire directly via WhatsApp.`
   const canonicalUrl = `${getSiteUrl()}/toys/${slug}`
   const image = subcategory.image || 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&q=80'
 
@@ -54,9 +55,15 @@ export async function generateMetadata({
       images: [
         {
           url: image,
-          alt: `${subcategory.name} at Baby's Bazaar`,
+          alt: `${subcategory.name} at Baby's Bazaar Erode`,
         },
       ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
     },
   }
 }
@@ -120,6 +127,27 @@ export default async function ToySubcategoryPage({
 
       {/* Footer */}
       <Footer settings={settings} />
+
+      {/* SEO: BreadcrumbList & ItemList Structured Data */}
+      <JsonLd
+        data={[
+          generateBreadcrumbSchema([
+            { name: 'Home', url: '/' },
+            { name: 'Categories', url: '/categories' },
+            { name: 'Toys', url: '/toys' },
+            { name: subcategory.name, url: `/toys/${slug}` },
+          ]),
+          generateItemListSchema(
+            `${subcategory.name} - Baby's Bazaar Erode`,
+            products.map((p) => ({
+              name: p.title,
+              url: `/product/${p.slug}`,
+              image: p.product_images?.[0],
+              price: p.price,
+            }))
+          ),
+        ]}
+      />
     </div>
   )
 }

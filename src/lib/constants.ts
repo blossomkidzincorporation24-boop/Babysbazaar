@@ -10,7 +10,7 @@ export const BUSINESS_PHONE_DISPLAY = "+91 84898 24888"
 export const BUSINESS_PHONE_TEL = "tel:+918489824888"
 export const BUSINESS_EMAIL = "support@babysbazaar.shop"
 
-export const BUSINESS_ADDRESS = "60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011"
+export const BUSINESS_ADDRESS = "160, Perundurai Road, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011"
 export const BUSINESS_GOOGLE_MAPS_URL = `https://maps.google.com/?q=${encodeURIComponent(BUSINESS_ADDRESS)}`
 
 export const BUSINESS_INSTAGRAM_URL = "https://instagram.com"

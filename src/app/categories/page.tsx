@@ -17,19 +17,42 @@ import JsonLd from '@/components/seo/JsonLd'
 import Footer from '@/components/user/Footer'
 import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
-export const metadata: Metadata = {
-  title: 'All Baby Product Categories | Erode',
-  description:
-    "Explore all baby product categories at Baby's Bazaar in Erode — baby clothing, feeding accessories, bedding, walkers, toys, and nursery keepsakes.",
-  alternates: {
-    canonical: `${getSiteUrl()}/categories`,
-  },
-  openGraph: {
-    title: "All Baby Product Categories | Baby's Bazaar Erode",
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams?: Promise<{ search?: string }>
+}): Promise<Metadata> {
+  const { search } = (await searchParams) || {}
+  const siteUrl = getSiteUrl()
+
+  if (search && search.trim()) {
+    return {
+      title: `Search Results for "${search.trim()}" | Baby's Bazaar`,
+      description: `Search results for "${search.trim()}" at Baby's Bazaar in Erode. Enquire directly on WhatsApp for product availability.`,
+      robots: {
+        index: false,
+        follow: true,
+      },
+      alternates: {
+        canonical: `${siteUrl}/categories`,
+      },
+    }
+  }
+
+  return {
+    title: "All Baby Product Categories | Baby Store in Erode | Baby's Bazaar",
     description:
-      "Explore all baby product categories at Baby's Bazaar in Erode — baby clothing, feeding accessories, bedding, walkers, toys, and nursery keepsakes.",
-    url: `${getSiteUrl()}/categories`,
-  },
+      "Explore all baby product categories at Baby's Bazaar in Erode — baby clothes, newborn essentials, baby care products, bedding, toys, and nursery essentials with easy WhatsApp enquiry.",
+    alternates: {
+      canonical: `${siteUrl}/categories`,
+    },
+    openGraph: {
+      title: "All Baby Product Categories | Baby's Bazaar Erode",
+      description:
+        "Explore all baby product categories at Baby's Bazaar in Erode — baby clothes, newborn essentials, baby care products, bedding, toys, and nursery essentials.",
+      url: `${siteUrl}/categories`,
+    },
+  }
 }
 
 export default async function CategoriesPage({

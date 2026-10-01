@@ -4,6 +4,8 @@ import {
   BUSINESS_PHONE_DISPLAY,
   BUSINESS_EMAIL,
   BUSINESS_WHATSAPP_NUMBER,
+  BUSINESS_INSTAGRAM_URL,
+  BUSINESS_TWITTER_URL,
   CANONICAL_DOMAIN,
 } from '@/lib/constants'
 
@@ -40,6 +42,29 @@ export function generateBreadcrumbSchema(items: BreadcrumbItem[]) {
   }
 }
 
+export function generateWebSiteSchema() {
+  const siteUrl = getSiteUrl()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    url: siteUrl,
+    name: "Baby's Bazaar",
+    alternateName: ["Baby's Bazaar Erode", "Babys Bazaar", "BabysBazaar"],
+    description:
+      "Baby's Bazaar is a baby store in Erode offering baby clothes, newborn essentials, baby care products, toys and kids essentials.",
+    inLanguage: 'en-IN',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteUrl}/categories?search={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  }
+}
+
 export function generateLocalBusinessSchema(settings?: {
   store_name?: string | null
   address?: string | null
@@ -52,16 +77,17 @@ export function generateLocalBusinessSchema(settings?: {
   const storeName = settings?.store_name || BUSINESS_NAME
   const phone = settings?.phone || settings?.whatsapp_number || BUSINESS_PHONE_DISPLAY
   const email = settings?.email || BUSINESS_EMAIL
-  const logo = settings?.logo || `${siteUrl}/logo.png`
+  const logo = settings?.logo || `${siteUrl}/babys-bazaar-logo.png`
 
   return {
     '@context': 'https://schema.org',
-    '@type': ['BabyStore', 'LocalBusiness', 'Store'],
+    '@type': ['BabyStore', 'Store', 'LocalBusiness'],
     '@id': `${siteUrl}/#store`,
     name: storeName,
     legalName: storeName,
+    alternateName: ["Baby's Bazaar Erode", "Babys Bazaar", "Baby's Bazaar - Baby Store in Erode"],
     description:
-      "Baby's Bazaar in Erode, Tamil Nadu is a dedicated baby products store offering newborn essentials, baby clothing, bedding, feeding accessories, walkers, and nursery essentials with personalized WhatsApp enquiry.",
+      "Baby's Bazaar in Erode, Tamil Nadu is a dedicated baby store offering newborn essentials, organic baby clothing, baby bedding, baby care products, feeding accessories, walkers, toys and nursery keepsakes with personalized WhatsApp enquiry.",
     url: siteUrl,
     telephone: phone,
     email: email,
@@ -72,7 +98,7 @@ export function generateLocalBusinessSchema(settings?: {
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu',
+      streetAddress: '160, Perundurai Road, near Sudha Hospital, Edayankattuvalasu',
       addressLocality: 'Erode',
       addressRegion: 'Tamil Nadu',
       postalCode: '638011',
@@ -80,9 +106,10 @@ export function generateLocalBusinessSchema(settings?: {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 11.341,
+      latitude: 11.3418,
       longitude: 77.7172,
     },
+    hasMap: 'https://maps.app.goo.gl/tWp471w5Uu3L9eA67',
     areaServed: [
       {
         '@type': 'City',
@@ -122,6 +149,10 @@ export function generateLocalBusinessSchema(settings?: {
       contactType: 'customer service',
       availableLanguage: ['English', 'Tamil'],
     },
+    sameAs: [
+      BUSINESS_INSTAGRAM_URL,
+      BUSINESS_TWITTER_URL,
+    ].filter(Boolean),
   }
 }
 
@@ -139,12 +170,12 @@ export function generateProductSchema(product: {
   const description =
     product.short_description ||
     product.description ||
-    `${product.title} available at Baby's Bazaar, Erode.`
+    `${product.title} available at Baby's Bazaar in Erode, Tamil Nadu.`
 
   const images =
     product.product_images && product.product_images.length > 0
       ? product.product_images.map((img) => (img.startsWith('http') ? img : `${siteUrl}${img}`))
-      : [`${siteUrl}/logo.png`]
+      : [`${siteUrl}/babys-bazaar-logo.png`]
 
   return {
     '@context': 'https://schema.org',
@@ -171,7 +202,27 @@ export function generateProductSchema(product: {
         '@type': 'Store',
         name: BUSINESS_NAME,
         telephone: BUSINESS_PHONE_DISPLAY,
+        url: siteUrl,
       },
     },
+  }
+}
+
+export function generateItemListSchema(
+  name: string,
+  items: Array<{ name: string; url: string; image?: string | null; price?: number }>
+) {
+  const siteUrl = getSiteUrl()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: name,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: item.url.startsWith('http') ? item.url : `${siteUrl}${item.url.startsWith('/') ? item.url : `/${item.url}`}`,
+      ...(item.image ? { image: item.image } : {}),
+    })),
   }
 }

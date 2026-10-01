@@ -114,10 +114,10 @@ export default function HeroSlider({ slides = [] }: HeroSliderProps) {
           <div className="relative w-full h-[280px] sm:h-[380px] md:h-[450px] rounded-2xl md:rounded-3xl overflow-hidden bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 shadow-2xl flex items-center justify-center text-center p-6">
             <div className="max-w-xl text-white space-y-3">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-roboto-slab tracking-tight drop-shadow-md">
-                Baby&apos;s Bazaar
+                Baby&apos;s Bazaar – Baby Store in Erode
               </h1>
               <p className="text-sm sm:text-base md:text-lg text-white/90 font-medium">
-                Everything your little one needs, all in one place.
+                Baby clothes, newborn essentials, toys and baby care products in Erode.
               </p>
             </div>
           </div>
