@@ -73,22 +73,26 @@ export default function OffersClient({ initialOffers }: Props) {
     if (isMobile) setUploadingMobile(true)
     else setUploadingImage(true)
 
-    const result = await uploadFile(file, 'banners')
+    try {
+      const result = await uploadFile(file, 'banners')
 
-    if (isMobile) setUploadingMobile(false)
-    else setUploadingImage(false)
+      if ('error' in result) {
+        toast.error(result.error)
+        return
+      }
 
-    if ('error' in result) {
-      toast.error(result.error)
-      return
-    }
-
-    if (isMobile) {
-      setMobileImageUrl(result.url)
-      toast.success('Mobile banner image uploaded!')
-    } else {
-      setImageUrl(result.url)
-      toast.success('Main banner image uploaded!')
+      if (isMobile) {
+        setMobileImageUrl(result.url)
+        toast.success('Mobile banner image uploaded!')
+      } else {
+        setImageUrl(result.url)
+        toast.success('Main banner image uploaded!')
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Upload failed. Please try again.')
+    } finally {
+      if (isMobile) setUploadingMobile(false)
+      else setUploadingImage(false)
     }
   }
 

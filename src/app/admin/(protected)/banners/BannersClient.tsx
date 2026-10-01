@@ -72,22 +72,26 @@ export default function BannersClient({ initialBanners }: Props) {
     if (isMobile) setUploadingMobile(true)
     else setUploadingImage(true)
 
-    const result = await uploadFile(file, 'banners')
+    try {
+      const result = await uploadFile(file, 'banners')
 
-    if (isMobile) setUploadingMobile(false)
-    else setUploadingImage(false)
+      if ('error' in result) {
+        toast.error(result.error)
+        return
+      }
 
-    if ('error' in result) {
-      toast.error(result.error)
-      return
-    }
-
-    if (isMobile) {
-      setMobileImageUrl(result.url)
-      toast.success('Mobile banner image uploaded')
-    } else {
-      setImageUrl(result.url)
-      toast.success('Desktop banner image uploaded')
+      if (isMobile) {
+        setMobileImageUrl(result.url)
+        toast.success('Mobile banner image uploaded')
+      } else {
+        setImageUrl(result.url)
+        toast.success('Desktop banner image uploaded')
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Upload failed. Please try again.')
+    } finally {
+      if (isMobile) setUploadingMobile(false)
+      else setUploadingImage(false)
     }
   }
 
@@ -339,9 +343,20 @@ export default function BannersClient({ initialBanners }: Props) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Mobile Banner Image (Optional)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-gray-700">
+                      Mobile Banner Image (Optional)
+                    </label>
+                    {mobileImageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setMobileImageUrl(null)}
+                        className="text-[11px] text-rose-500 hover:text-rose-700 hover:underline cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="file"
                     accept="image/*"
@@ -349,10 +364,10 @@ export default function BannersClient({ initialBanners }: Props) {
                     className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer"
                   />
                   <p className="text-[11px] text-gray-500 mt-1">Recommended size: 1080 × 1350 px</p>
-                  {uploadingMobile && <p className="text-xs text-purple-600 mt-1">Uploading...</p>}
+                  {uploadingMobile && <p className="text-xs text-purple-600 font-medium animate-pulse mt-1">Uploading...</p>}
                   {mobileImageUrl && (
-                    <div className="relative w-full h-24 rounded-lg overflow-hidden border border-gray-200 mt-2">
-                      <Image src={mobileImageUrl} alt="Mobile Preview" fill className="object-cover" />
+                    <div className="relative w-full h-24 rounded-lg overflow-hidden border border-gray-200 mt-2 bg-gray-50">
+                      <Image src={mobileImageUrl} alt="Mobile Preview" fill className="object-contain" />
                     </div>
                   )}
                 </div>
