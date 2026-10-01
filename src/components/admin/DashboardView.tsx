@@ -318,19 +318,28 @@ export default function DashboardView({
 
       const imagePayloads = formImages.map((url, idx) => ({ url, is_primary: idx === 0, alt_text: formTitle.trim() }))
 
-      let res
-      if (editingProduct) {
-        res = await updateProduct(editingProduct.id, payload, imagePayloads)
-      } else {
-        res = await createProduct(payload, imagePayloads)
-      }
+      try {
+        let res
+        if (editingProduct) {
+          res = await updateProduct(editingProduct.id, payload, imagePayloads)
+        } else {
+          res = await createProduct(payload, imagePayloads)
+        }
 
-      if (res?.error) {
-        toast.error(res.error)
-      } else {
-        toast.success(editingProduct ? 'Product updated successfully' : 'Product added successfully')
-        setIsProductModalOpen(false)
-        router.refresh()
+        if (res?.error) {
+          toast.error(res.error)
+        } else {
+          toast.success(editingProduct ? 'Product updated successfully' : 'Product added successfully')
+          setIsProductModalOpen(false)
+          router.refresh()
+        }
+      } catch (err: any) {
+        if (err?.message?.includes('Server Action') || err?.message?.includes('failed-to-find-server-action')) {
+          toast.info('New update detected. Refreshing page...')
+          setTimeout(() => window.location.reload(), 1000)
+        } else {
+          toast.error(err?.message || 'Failed to save product')
+        }
       }
     })
   }

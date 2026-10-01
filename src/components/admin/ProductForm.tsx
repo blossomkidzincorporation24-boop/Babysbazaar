@@ -168,13 +168,22 @@ export default function ProductForm({ categories, product }: Props) {
 
       const imagePayloads = images.map((url, idx) => ({ url, is_primary: idx === 0, alt_text: title.trim() }))
 
-      const result = product
-        ? await updateProduct(product.id, payload, imagePayloads)
-        : await createProduct(payload, imagePayloads)
+      try {
+        const result = product
+          ? await updateProduct(product.id, payload, imagePayloads)
+          : await createProduct(payload, imagePayloads)
 
-      if (result?.error) { toast.error(result.error); return }
-      toast.success(product ? 'Product updated!' : 'Product created!')
-      router.push('/admin/products')
+        if (result?.error) { toast.error(result.error); return }
+        toast.success(product ? 'Product updated!' : 'Product created!')
+        router.push('/admin/products')
+      } catch (err: any) {
+        if (err?.message?.includes('Server Action') || err?.message?.includes('failed-to-find-server-action')) {
+          toast.info('New system update detected. Refreshing page...')
+          setTimeout(() => window.location.reload(), 1000)
+        } else {
+          toast.error(err?.message || 'Something went wrong. Please try again.')
+        }
+      }
     })
   }
 
