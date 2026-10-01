@@ -80,7 +80,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
 
               {/* Cute Yellow Badge "⭐ New Arrivals 🌟" */}
               <Link
-                href="/category/new-clothings"
+                href="/#new-arrivals"
                 className="hidden xl:flex items-center gap-1.5 bg-[#FFF9E6] border border-[#FDE68A] hover:bg-[#FFF3C4] text-[#D97706] font-bold text-xs px-3 py-1.5 rounded-full shadow-2xs transition-all cursor-pointer"
               >
                 <Sparkles size={13} className="text-[#D97706]" />

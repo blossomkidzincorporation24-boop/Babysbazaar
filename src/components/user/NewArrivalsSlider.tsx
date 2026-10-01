@@ -60,7 +60,7 @@ export default function NewArrivalsSlider({
   }
 
   return (
-    <section className="w-full py-10 lg:py-16 overflow-hidden">
+    <section id="new-arrivals" className="w-full py-10 lg:py-16 overflow-hidden scroll-mt-24">
       <Container>
         {/* Section Header - Center Aligned */}
         <div className="relative flex flex-col items-center justify-center text-center mb-6 sm:mb-8">
