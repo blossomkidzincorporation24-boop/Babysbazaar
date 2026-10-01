@@ -120,10 +120,10 @@ export default function Footer({ settings }: FooterProps) {
             </ul>
           </div>
 
-          {/* Column 3: Quick Links 2 */}
+          {/* Column 3: Explore Collections */}
           <div className="space-y-4 sm:pl-4">
             <h4 className="font-roboto-slab text-base sm:text-lg font-bold text-black">
-              Quick Links
+              Explore Collections
             </h4>
             <ul className="space-y-3 font-roboto-slab text-base text-black/85">
               <li>

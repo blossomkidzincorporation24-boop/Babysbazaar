@@ -55,10 +55,10 @@ export default async function CategoriesPage({
       .order('display_order', { ascending: true }),
     supabase
       .from('categories')
-      .select('id, name, slug, image')
+      .select('id, name, slug, image, description')
       .eq('status', 'active')
       .order('sort_order', { ascending: true })
-      .limit(10),
+      .limit(20),
     supabase
       .from('products')
       .select('id, title, slug, price, product_images, description, categories(name, slug)')
@@ -76,7 +76,23 @@ export default async function CategoriesPage({
 
   const settings = settingsRes.status === 'fulfilled' ? settingsRes.value : null
   const banners = bannersRes.status === 'fulfilled' ? bannersRes.value?.data || [] : []
-  const categories = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data || [] : []
+  const rawCategories = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data || [] : []
+  const toySubcategorySlugs = new Set([
+    'baby-toys',
+    'educational-toys',
+    'remote-control-toys',
+    'cars-and-vehicles',
+    'dolls-and-pretend-play',
+    'building-toys',
+    'musical-toys',
+    'outdoor-toys',
+    'soft-toys',
+    'activity-and-puzzle',
+    'ride-on-toys',
+  ])
+  const categories = rawCategories
+    .filter((c: any) => !toySubcategorySlugs.has(c.slug) && !(c.description && c.description.toLowerCase().includes('[parent:toys]')))
+    .slice(0, 10)
   const displayProducts = productsRes.status === 'fulfilled' ? productsRes.value?.data || [] : []
   const searchResults = searchRes.status === 'fulfilled' ? (searchRes.value as any)?.data || [] : []
 

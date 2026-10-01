@@ -67,10 +67,11 @@ export default async function UserHomePage() {
     getActiveDeliveryFeatures('trust_badge'),
     supabase
       .from('categories')
-      .select('id, name, slug, image')
+      .select('id, name, slug, image, description, sort_order')
       .eq('status', 'active')
+      .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
-      .limit(8),
+      .limit(20),
     supabase
       .from('products')
       .select('id, title, slug, price, product_images, description, new_arrival, categories(name, slug)')
@@ -101,7 +102,23 @@ export default async function UserHomePage() {
   const banners = bannersRes.status === 'fulfilled' ? bannersRes.value?.data || [] : []
   const offerBanner = offerBannerRes.status === 'fulfilled' ? offerBannerRes.value : null
   const ribbonFeatures = ribbonFeaturesRes.status === 'fulfilled' ? ribbonFeaturesRes.value : []
-  const categories = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data || [] : []
+  const rawCategories = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data || [] : []
+  const toySubcategorySlugs = new Set([
+    'baby-toys',
+    'educational-toys',
+    'remote-control-toys',
+    'cars-and-vehicles',
+    'dolls-and-pretend-play',
+    'building-toys',
+    'musical-toys',
+    'outdoor-toys',
+    'soft-toys',
+    'activity-and-puzzle',
+    'ride-on-toys',
+  ])
+  const categories = rawCategories
+    .filter((c: any) => !toySubcategorySlugs.has(c.slug) && !(c.description && c.description.toLowerCase().includes('[parent:toys]')))
+    .slice(0, 8)
   const newArrivals = newArrivalsRes.status === 'fulfilled' ? newArrivalsRes.value?.data || [] : []
   const bestSellers = bestSellersRes.status === 'fulfilled' ? bestSellersRes.value?.data || [] : []
   const photos = photosRes.status === 'fulfilled' ? photosRes.value?.data || [] : []

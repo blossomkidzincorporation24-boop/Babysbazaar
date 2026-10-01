@@ -34,7 +34,7 @@ export default function CategoryGrid({ categories = [] }: CategoryGridProps) {
               return (
                 <Link
                   key={cat.id || idx}
-                  href={`/category/${cat.slug}`}
+                  href={cat.slug === 'toys' ? '/toys' : `/category/${cat.slug}`}
                   className="group relative h-40 sm:h-48 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col justify-end bg-gray-100"
                 >
                   {/* Background Image */}

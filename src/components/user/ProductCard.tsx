@@ -2,7 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, buildWhatsAppEnquiryUrl } from '@/lib/utils'
+import { getSiteUrl } from '@/lib/seo'
 
 export interface ProductItem {
   id: string
@@ -26,7 +27,6 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, whatsappNumber }: ProductCardProps) {
-  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
   const imageUrl =
     product.product_images?.[0] ||
     'https://api.builder.io/api/v1/image/assets/TEMP/3a043f6484a7e6ba40d92608cd7bc243cdd19583?width=664'
@@ -38,12 +38,14 @@ export default function ProductCard({ product, whatsappNumber }: ProductCardProp
     'BABY ESSENTIALS'
 
   // Standardized WhatsApp prefilled message
-  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://babysbazaar.com/product/${product.slug}`
+  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `${getSiteUrl()}/product/${product.slug}`
   const formattedPrice = product.price_display || `₹${product.price?.toLocaleString('en-IN') || product.price}`
-  const waText = encodeURIComponent(
-    `Hello Baby's Bazaar, I am interested in:\nProduct: ${product.title}\nPrice: ${formattedPrice}\nProduct Link: ${productUrl}\n\nPlease share availability and delivery details.`
-  )
-  const waUrl = `https://wa.me/${cleanPhone}?text=${waText}`
+  const waUrl = buildWhatsAppEnquiryUrl({
+    whatsappNumber,
+    productTitle: product.title,
+    price: formattedPrice,
+    productUrl,
+  })
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200/90 hover:border-gray-300 p-2.5 sm:p-3.5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between h-full group/card w-full">

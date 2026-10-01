@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShieldCheck, Sparkles, Eye } from 'lucide-react'
+import { buildWhatsAppEnquiryUrl } from '@/lib/utils'
+import { getSiteUrl } from '@/lib/seo'
 
 export interface DetailedProduct {
   id: string
@@ -82,12 +84,16 @@ export default function ProductDetailView({
   const originalPrice = product.original_price || Math.round(price * 1.25)
 
   // Standardized WhatsApp Enquiry Message (Audit Specification)
-  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://babysbazaar.com/product/${product.slug}`
-  const variantLine = isClothing && selectedVariant ? `\nVariant / Age: ${selectedVariant}` : ''
-  const waMessage = encodeURIComponent(
-    `Hello Baby's Bazaar, I am interested in:\nProduct: ${product.title}\nPrice: ₹${price.toLocaleString('en-IN')}\nQuantity: ${quantity}${variantLine}\nProduct Link: ${productUrl}\n\nPlease share availability and delivery details.`
-  )
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${waMessage}`
+  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `${getSiteUrl()}/product/${product.slug}`
+  const variantText = isClothing && selectedVariant ? selectedVariant : undefined
+  const whatsappUrl = buildWhatsAppEnquiryUrl({
+    whatsappNumber,
+    productTitle: product.title,
+    price,
+    quantity,
+    variant: variantText,
+    productUrl,
+  })
 
   // Share on WhatsApp
   const shareText = encodeURIComponent(`Check out ${product.title} on Baby's Bazaar:\n${productUrl}`)
@@ -407,10 +413,13 @@ export default function ProductDetailView({
             const itemCategory =
               item.category || item.category_tag || item.categories?.name || 'BABY PRODUCTS'
 
-            const itemUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${item.slug}` : `https://babysbazaar.com/product/${item.slug}`
-            const itemWaUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-              `Hello Baby's Bazaar, I am interested in:\nProduct: ${item.title}\nPrice: ₹${itemPrice.toLocaleString('en-IN')}\nProduct Link: ${itemUrl}\n\nPlease share availability and delivery details.`
-            )}`
+            const itemUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${item.slug}` : `${getSiteUrl()}/product/${item.slug}`
+            const itemWaUrl = buildWhatsAppEnquiryUrl({
+              whatsappNumber,
+              productTitle: item.title,
+              price: itemPrice,
+              productUrl: itemUrl,
+            })
 
             return (
               <div

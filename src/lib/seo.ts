@@ -3,7 +3,7 @@ export function getSiteUrl(): string {
   if (envUrl) {
     return envUrl.replace(/\/+$/, '')
   }
-  return 'https://babysbazaar.com'
+  return 'https://babysbazaar.shop'
 }
 
 export function buildCanonicalUrl(path: string = ''): string {

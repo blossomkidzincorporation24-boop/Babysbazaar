@@ -22,12 +22,56 @@ export function formatPrice(price: number): string {
   }).format(price)
 }
 
+export function buildWhatsAppEnquiryUrl({
+  whatsappNumber,
+  productTitle,
+  price,
+  quantity = 1,
+  variant,
+  productUrl,
+}: {
+  whatsappNumber?: string | null
+  productTitle: string
+  price?: number | string | null
+  quantity?: number | string | null
+  variant?: string | null
+  productUrl?: string
+}): string {
+  const cleanPhone = whatsappNumber?.replace(/\D/g, '') || '918489824888'
+  const formattedPrice =
+    typeof price === 'number'
+      ? `₹${price.toLocaleString('en-IN')}`
+      : price
+      ? String(price).startsWith('₹')
+        ? String(price)
+        : `₹${price}`
+      : 'Price on request'
+
+  let message = `Hello Baby's Bazaar,\n\nI am interested in:\n\nProduct: ${productTitle}\nPrice: ${formattedPrice}`
+
+  if (quantity && Number(quantity) > 0) {
+    message += `\nQuantity: ${quantity}`
+  }
+
+  if (variant && variant.trim()) {
+    message += `\nVariant: ${variant.trim()}`
+  }
+
+  if (productUrl) {
+    message += `\nProduct Link: ${productUrl}`
+  }
+
+  message += `\n\nPlease share availability and delivery details.`
+
+  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
+}
+
 export function buildWhatsAppUrl(whatsappNumber: string, productTitle: string, productUrl: string): string {
-  const number = whatsappNumber.replace(/\D/g, '')
-  const message = encodeURIComponent(
-    `Hi Baby's Bazaar,\n\nI am interested in:\n*${productTitle}*\n${productUrl}\n\nPlease share more details.`
-  )
-  return `https://wa.me/${number}?text=${message}`
+  return buildWhatsAppEnquiryUrl({
+    whatsappNumber,
+    productTitle,
+    productUrl,
+  })
 }
 
 export function getPublicUrl(supabaseUrl: string, bucket: string, path: string): string {
