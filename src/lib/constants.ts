@@ -13,7 +13,7 @@ export const BUSINESS_EMAIL = "support@babysbazaar.shop"
 export const BUSINESS_ADDRESS = "160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011"
 export const BUSINESS_GOOGLE_MAPS_URL = `https://maps.google.com/?q=${encodeURIComponent(BUSINESS_ADDRESS)}`
 
-export const BUSINESS_INSTAGRAM_URL = "https://instagram.com"
+export const BUSINESS_INSTAGRAM_URL = "https://www.instagram.com/babys.bazaar?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw=="
 export const BUSINESS_TWITTER_URL = "https://twitter.com"
 
 export const CANONICAL_DOMAIN = "https://babysbazaar.shop"
