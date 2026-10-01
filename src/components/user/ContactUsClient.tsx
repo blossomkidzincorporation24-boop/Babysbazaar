@@ -31,7 +31,7 @@ export default function ContactUsClient({ settings }: ContactUsClientProps) {
   const rawWhatsApp = settings?.whatsapp_number || '918489824888'
   const cleanWhatsApp = rawWhatsApp.replace(/\D/g, '') || '918489824888'
   const storePhone = settings?.phone || '+91 84898 24888'
-  const storeEmail = settings?.email || 'support@babysbazaar.com'
+  const storeEmail = settings?.email || 'support@babysbazaar.shop'
   const storeAddress =
     settings?.address ||
     '60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011'

@@ -42,7 +42,7 @@ export function generateLocalBusinessSchema(settings?: {
   const siteUrl = getSiteUrl()
   const storeName = settings?.store_name || "Baby's Bazaar"
   const phone = settings?.phone || settings?.whatsapp_number || '+91 84898 24888'
-  const email = settings?.email || 'support@babysbazaar.com'
+  const email = settings?.email || 'support@babysbazaar.shop'
   const logo = settings?.logo || `${siteUrl}/logo.png`
 
   return {
