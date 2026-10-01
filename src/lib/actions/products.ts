@@ -90,12 +90,18 @@ async function generateUniqueSlug(title: string, currentId?: string) {
   return slug
 }
 
-function revalidateProductPaths() {
+function revalidateProductPaths(slug?: string) {
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/products')
   revalidatePath('/')
   revalidatePath('/categories')
-  revalidatePath('/category', 'layout')
-  revalidatePath('/product', 'layout')
+  revalidatePath('/category/[slug]', 'page')
+  revalidatePath('/product/[slug]', 'page')
+  revalidatePath('/toys')
+  revalidatePath('/toys/[slug]', 'page')
+  if (slug) {
+    revalidatePath(`/product/${slug}`)
+  }
   revalidatePath('/sitemap.xml')
 }
 
@@ -130,8 +136,8 @@ export async function createProduct(payload: any, images: ImagePayload[]) {
 
   await logActivity('PRODUCT_CREATED', 'product', product.id, `Created product "${product.title}"`)
 
-  revalidateProductPaths()
-  return { success: true, id: product.id }
+  revalidateProductPaths(product.slug)
+  return { success: true, id: product.id, slug: product.slug }
 }
 
 export async function updateProduct(id: string, payload: any, images: ImagePayload[]) {
@@ -167,7 +173,7 @@ export async function updateProduct(id: string, payload: any, images: ImagePaylo
 
   await logActivity('PRODUCT_UPDATED', 'product', id, `Updated product "${payload.title}"`)
 
-  revalidateProductPaths()
+  revalidateProductPaths(payload.slug)
   return { success: true }
 }
 
