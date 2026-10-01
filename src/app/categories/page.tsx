@@ -122,7 +122,7 @@ export default async function CategoriesPage({
   const searchResults = searchRes.status === 'fulfilled' ? (searchRes.value as any)?.data || [] : []
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-[#FFE8EE] selection:text-[#E1144B] pb-16 sm:pb-0">
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-[#FFE8EE] selection:text-[#E1144B]">
       {/* 1. Header / Navbar */}
       <Navbar whatsappNumber={settings?.whatsapp_number} />
 

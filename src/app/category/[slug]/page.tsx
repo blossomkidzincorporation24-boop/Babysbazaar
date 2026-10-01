@@ -200,7 +200,7 @@ export default async function CategoryPage({
   const displayName = category?.name || formatSlugToTitle(slug)
 
   return (
-    <div className="min-h-screen flex flex-col bg-white pb-16 sm:pb-0">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Top Navigation Bar */}
       <Navbar whatsappNumber={settings?.whatsapp_number} />
 

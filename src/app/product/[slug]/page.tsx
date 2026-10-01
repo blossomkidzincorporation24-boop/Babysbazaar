@@ -156,7 +156,7 @@ export default async function ProductPage({
   ]
 
   return (
-    <div className="min-h-screen flex flex-col bg-white pb-16 sm:pb-0">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Top Navbar */}
       <Navbar whatsappNumber={settings?.whatsapp_number} />
 
