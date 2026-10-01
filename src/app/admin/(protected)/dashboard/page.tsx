@@ -15,8 +15,7 @@ export default async function DashboardPage() {
       supabase
         .from('products')
         .select('*, categories(id, name, slug)')
-        .order('created_at', { ascending: false })
-        .limit(20),
+        .order('created_at', { ascending: false }),
     supabase
       .from('categories')
       .select('*')
