@@ -22,7 +22,7 @@ export default function FaqSection() {
     },
     {
       q: 'Can I visit your retail store in Erode?',
-      a: 'Yes, absolutely! We welcome you to visit Baby\'s Bazaar in person at 60, Perundurai Rd (near Sudha Hospital), Edayankattuvalasu, Erode, Tamil Nadu 638011.',
+      a: 'Yes, absolutely! We welcome you to visit Baby\'s Bazaar in person at 160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011.',
     },
     {
       q: 'What materials are used for your baby clothes and bedding?',

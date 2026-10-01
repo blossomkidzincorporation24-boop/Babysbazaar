@@ -3,7 +3,7 @@
 **Status:** ✅ ALL CHECKS PASSED  
 **Production Domain:** `https://babysbazaar.shop`  
 **Primary WhatsApp Number:** `+91 84898 24888` (`918489824888`)  
-**Verified Store Address:** `60, Perundurai Rd, Opp. to Reliance Smart, Kumalan Kuttai, Erode, Tamil Nadu 638011`  
+**Verified Store Address:** `160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011`  
 **Google Maps Verified Link:** `https://maps.app.goo.gl/tWp471w5Uu3L9eA67`  
 **Build Status:** Next.js 15.5.26 Standalone Production Build: **18/18 Routes Compiled Cleanly**
 

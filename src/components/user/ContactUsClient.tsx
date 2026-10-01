@@ -403,7 +403,7 @@ export default function ContactUsClient({ settings }: ContactUsClientProps) {
                   Baby's Bazaar Flagship Store
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-200 mt-1 max-w-xl">
-                  Explore our curated fabrics, infant play zones, luxury hampers, and baby care essentials in person at Perundurai.
+                  Explore our curated fabrics, infant play zones, luxury hampers, and baby care essentials in person at 160, Perundurai Road, Near Sudha Hospital, Erode.
                 </p>
               </div>
 

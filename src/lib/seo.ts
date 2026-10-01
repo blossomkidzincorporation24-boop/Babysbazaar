@@ -98,7 +98,7 @@ export function generateLocalBusinessSchema(settings?: {
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '160, Perundurai Road, near Sudha Hospital, Edayankattuvalasu',
+      streetAddress: '160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu',
       addressLocality: 'Erode',
       addressRegion: 'Tamil Nadu',
       postalCode: '638011',

@@ -11,14 +11,14 @@ import ContactUsClient from '@/components/user/ContactUsClient'
 export const metadata: Metadata = {
   title: "Contact Us | Baby Store in Erode | Baby's Bazaar",
   description:
-    "Get in touch with Baby's Bazaar in Erode, Tamil Nadu. Visit our store at 160, Perundurai Road, near Sudha Hospital or contact us via WhatsApp (+91 84898 24888) for instant product enquiries.",
+    "Get in touch with Baby's Bazaar in Erode, Tamil Nadu. Visit our store at 160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode or contact us via WhatsApp (+91 84898 24888) for instant product enquiries.",
   alternates: {
     canonical: `${getSiteUrl()}/contact`,
   },
   openGraph: {
     title: "Contact Us | Baby Store in Erode | Baby's Bazaar",
     description:
-      "Get in touch with Baby's Bazaar in Erode, Tamil Nadu. Visit our store on Perundurai Road or contact us via WhatsApp for instant product enquiries.",
+      "Get in touch with Baby's Bazaar in Erode, Tamil Nadu. Visit our store at 160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode or contact us via WhatsApp for instant product enquiries.",
     url: `${getSiteUrl()}/contact`,
   },
 }

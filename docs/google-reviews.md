@@ -54,7 +54,7 @@ To link reviews to Baby's Bazaar, you need the unique `place_id` for your physic
 1. Visit the [Google Place ID Finder](https://developers.google.com/maps/documentation/places/web-service/place-id).
 2. Enter the store address:
    ```text
-   Baby's Bazaar, 60, Perundurai Rd, near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011
+   Baby's Bazaar, 160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011
    ```
 3. Click on the store pin.
 4. Copy the **Place ID** string displayed in the tooltip (e.g. `ChIJ...`).
