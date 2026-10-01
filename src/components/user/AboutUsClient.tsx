@@ -301,10 +301,10 @@ export default function AboutUsClient({ whatsappNumber, photos = [] }: AboutUsCl
                   <div className="pt-6 mt-4 border-t border-[#F8E3EC] flex items-center justify-between text-[11px]">
                     <span className="font-sans text-gray-400">{item.meta}</span>
                     <Link
-                      href={`/category/${item.slug}`}
+                      href={item.slug === 'baby-toys' || item.slug === 'toys' ? '/toys' : `/category/${item.slug}`}
                       className="font-sans font-semibold text-[#E1144B] hover:text-[#B80D3C] flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform"
                     >
-                      <span>Enquire Category</span>
+                      <span>Explore Category</span>
                       <span>↗</span>
                     </Link>
                   </div>
