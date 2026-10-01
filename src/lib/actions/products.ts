@@ -91,18 +91,20 @@ async function generateUniqueSlug(title: string, currentId?: string) {
 }
 
 function revalidateProductPaths(slug?: string) {
-  revalidatePath('/', 'layout')
-  revalidatePath('/admin/products')
-  revalidatePath('/')
-  revalidatePath('/categories')
-  revalidatePath('/category/[slug]', 'page')
-  revalidatePath('/product/[slug]', 'page')
-  revalidatePath('/toys')
-  revalidatePath('/toys/[slug]', 'page')
-  if (slug) {
-    revalidatePath(`/product/${slug}`)
+  try {
+    revalidatePath('/', 'layout')
+    revalidatePath('/admin/products')
+    revalidatePath('/admin/dashboard')
+    revalidatePath('/')
+    revalidatePath('/categories')
+    revalidatePath('/toys')
+    if (slug) {
+      revalidatePath(`/product/${slug}`)
+    }
+    revalidatePath('/sitemap.xml')
+  } catch (e) {
+    console.error('Revalidation error:', e)
   }
-  revalidatePath('/sitemap.xml')
 }
 
 export async function createProduct(payload: any, images: ImagePayload[]) {
