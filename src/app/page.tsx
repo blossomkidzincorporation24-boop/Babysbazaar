@@ -99,10 +99,10 @@ export default async function UserHomePage() {
   ])
 
   const settings = settingsRes.status === 'fulfilled' ? settingsRes.value : null
-  const banners = bannersRes.status === 'fulfilled' ? bannersRes.value?.data || [] : []
+  const banners = (bannersRes.status === 'fulfilled' && Array.isArray(bannersRes.value?.data)) ? bannersRes.value.data : []
   const offerBanner = offerBannerRes.status === 'fulfilled' ? offerBannerRes.value : null
-  const ribbonFeatures = ribbonFeaturesRes.status === 'fulfilled' ? ribbonFeaturesRes.value : []
-  const rawCategories = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data || [] : []
+  const ribbonFeatures = (ribbonFeaturesRes.status === 'fulfilled' && Array.isArray(ribbonFeaturesRes.value)) ? ribbonFeaturesRes.value : []
+  const rawCategories = (categoriesRes.status === 'fulfilled' && Array.isArray(categoriesRes.value?.data)) ? categoriesRes.value.data : []
   const toySubcategorySlugs = new Set([
     'baby-toys',
     'educational-toys',
@@ -116,16 +116,16 @@ export default async function UserHomePage() {
     'activity-and-puzzle',
     'ride-on-toys',
   ])
-  const categories = rawCategories
-    .filter((c: any) => !toySubcategorySlugs.has(c.slug) && !(c.description && c.description.toLowerCase().includes('[parent:toys]')))
+  const categories = (Array.isArray(rawCategories) ? rawCategories : [])
+    .filter((c: any) => c && c.slug && !toySubcategorySlugs.has(c.slug) && !(c.description && typeof c.description === 'string' && c.description.toLowerCase().includes('[parent:toys]')))
     .slice(0, 8)
-  const newArrivals = newArrivalsRes.status === 'fulfilled' ? newArrivalsRes.value?.data || [] : []
-  const bestSellers = bestSellersRes.status === 'fulfilled' ? bestSellersRes.value?.data || [] : []
-  const photos = photosRes.status === 'fulfilled' ? photosRes.value?.data || [] : []
-  const reels = reelsRes.status === 'fulfilled' ? reelsRes.value?.data || [] : []
+  const newArrivals = (newArrivalsRes.status === 'fulfilled' && Array.isArray(newArrivalsRes.value?.data)) ? newArrivalsRes.value.data : []
+  const bestSellers = (bestSellersRes.status === 'fulfilled' && Array.isArray(bestSellersRes.value?.data)) ? bestSellersRes.value.data : []
+  const photos = (photosRes.status === 'fulfilled' && Array.isArray(photosRes.value?.data)) ? photosRes.value.data : []
+  const reels = (reelsRes.status === 'fulfilled' && Array.isArray(reelsRes.value?.data)) ? reelsRes.value.data : []
 
-  const displayNewArrivals = (newArrivals || []).filter(Boolean)
-  const displayBestSellers = (bestSellers || []).filter(Boolean)
+  const displayNewArrivals = (Array.isArray(newArrivals) ? newArrivals : []).filter(Boolean)
+  const displayBestSellers = (Array.isArray(bestSellers) ? bestSellers : []).filter(Boolean)
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-[#FFE8EE] selection:text-[#E1144B]">

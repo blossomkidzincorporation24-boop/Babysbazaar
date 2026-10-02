@@ -28,21 +28,24 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, whatsappNumber }: ProductCardProps) {
   const imageUrl =
-    product.product_images?.[0] ||
+    (product?.product_images && product.product_images.length > 0 && product.product_images[0]) ||
     'https://api.builder.io/api/v1/image/assets/TEMP/3a043f6484a7e6ba40d92608cd7bc243cdd19583?width=664'
   const categoryTag =
-    product.category_tag ||
-    (Array.isArray(product.categories)
+    product?.category_tag ||
+    (Array.isArray(product?.categories)
       ? product.categories[0]?.name
-      : product.categories?.name) ||
+      : product?.categories?.name) ||
     'BABY ESSENTIALS'
 
+  const productTitle = product?.title || 'Baby Essential'
+  const productSlug = product?.slug || ''
+
   // Standardized WhatsApp prefilled message
-  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `${getSiteUrl()}/product/${product.slug}`
-  const formattedPrice = product.price_display || `₹${product.price?.toLocaleString('en-IN') || product.price}`
+  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${productSlug}` : `${getSiteUrl()}/product/${productSlug}`
+  const formattedPrice = product?.price_display || (product?.price != null ? `₹${Number(product.price).toLocaleString('en-IN')}` : '₹0')
   const waUrl = buildWhatsAppEnquiryUrl({
     whatsappNumber,
-    productTitle: product.title,
+    productTitle,
     price: formattedPrice,
     productUrl,
   })
