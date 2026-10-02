@@ -435,6 +435,160 @@ export interface Database {
           updated_at?: string
         }
       }
+      team_users: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          role: 'admin' | 'manager' | 'staff' | 'sales' | 'inventory' | 'delivery'
+          phone: string | null
+          status: 'active' | 'inactive'
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          role?: 'admin' | 'manager' | 'staff' | 'sales' | 'inventory' | 'delivery'
+          phone?: string | null
+          status?: 'active' | 'inactive'
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          role?: 'admin' | 'manager' | 'staff' | 'sales' | 'inventory' | 'delivery'
+          phone?: string | null
+          status?: 'active' | 'inactive'
+          updated_at?: string
+        }
+      }
+      work_logs: {
+        Row: {
+          id: string
+          user_id: string
+          work_date: string
+          work_title: string
+          work_description: string | null
+          work_category: string
+          status: 'completed' | 'in_progress' | 'pending'
+          start_time: string | null
+          end_time: string | null
+          total_hours: number
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          work_date?: string
+          work_title: string
+          work_description?: string | null
+          work_category?: string
+          status?: 'completed' | 'in_progress' | 'pending'
+          start_time?: string | null
+          end_time?: string | null
+          total_hours?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          work_date?: string
+          work_title?: string
+          work_description?: string | null
+          work_category?: string
+          status?: 'completed' | 'in_progress' | 'pending'
+          start_time?: string | null
+          end_time?: string | null
+          total_hours?: number
+          notes?: string | null
+          updated_at?: string
+        }
+      }
+      task_logs: {
+        Row: {
+          id: string
+          assigned_to: string | null
+          task_title: string
+          description: string | null
+          priority: 'low' | 'medium' | 'high' | 'urgent'
+          status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
+          assigned_date: string
+          due_date: string | null
+          completed_date: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          assigned_to?: string | null
+          task_title: string
+          description?: string | null
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled'
+          assigned_date?: string
+          due_date?: string | null
+          completed_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          assigned_to?: string | null
+          task_title?: string
+          description?: string | null
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled'
+          assigned_date?: string
+          due_date?: string | null
+          completed_date?: string | null
+          updated_at?: string
+        }
+      }
+      daily_reports: {
+        Row: {
+          id: string
+          report_date: string
+          total_team_members: number
+          members_worked: number
+          total_tasks: number
+          completed_tasks: number
+          pending_tasks: number
+          total_hours: number
+          report_summary: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          report_date?: string
+          total_team_members?: number
+          members_worked?: number
+          total_tasks?: number
+          completed_tasks?: number
+          pending_tasks?: number
+          total_hours?: number
+          report_summary?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          report_date?: string
+          total_team_members?: number
+          members_worked?: number
+          total_tasks?: number
+          completed_tasks?: number
+          pending_tasks?: number
+          total_hours?: number
+          report_summary?: string | null
+        }
+      }
     }
   }
 }
@@ -453,6 +607,19 @@ export type MediaAsset = Database['public']['Tables']['media_assets']['Row']
 export type Settings = Database['public']['Tables']['settings']['Row']
 export type ActivityLog = Database['public']['Tables']['activity_logs']['Row']
 export type AdminProfile = Database['public']['Tables']['admin_profiles']['Row']
+
+export type TeamUser = Database['public']['Tables']['team_users']['Row']
+export type WorkLog = Database['public']['Tables']['work_logs']['Row']
+export type TaskLog = Database['public']['Tables']['task_logs']['Row']
+export type DailyReport = Database['public']['Tables']['daily_reports']['Row']
+
+export type WorkLogWithUser = WorkLog & {
+  team_users: Pick<TeamUser, 'id' | 'name' | 'email' | 'role'> | null
+}
+
+export type TaskLogWithUser = TaskLog & {
+  team_users: Pick<TeamUser, 'id' | 'name' | 'email' | 'role'> | null
+}
 
 export type ProductWithCategory = Product & {
   categories: Pick<Category, 'id' | 'name' | 'slug'> | null
