@@ -33,7 +33,7 @@ export async function createReel(payload: any) {
   const parsed = ReelSchema.safeParse(payload)
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Validation error' }
 
-  let { error } = await supabase.from('reels').insert(parsed.data)
+  let { data, error } = await supabase.from('reels').insert(parsed.data).select().single()
   
   // Defensive retry with core columns if optional columns aren't in DB yet
   if (error && error.message.includes('column')) {
@@ -43,14 +43,15 @@ export async function createReel(payload: any) {
       title: parsed.data.title,
       status: parsed.data.status,
     }
-    const retry = await supabase.from('reels').insert(corePayload)
+    const retry = await supabase.from('reels').insert(corePayload).select().single()
     error = retry.error
+    data = retry.data
   }
 
   if (error) return { error: error.message }
   revalidatePath('/admin/reels')
   revalidatePath('/')
-  return { success: true }
+  return { success: true, reel: data }
 }
 
 export async function updateReel(id: string, payload: any) {
@@ -58,10 +59,10 @@ export async function updateReel(id: string, payload: any) {
   if (!auth.authorized) return { error: auth.error }
 
   const supabase = await createClient()
-  let { error } = await supabase.from('reels').update({
+  let { data, error } = await supabase.from('reels').update({
     ...payload,
     updated_at: new Date().toISOString(),
-  }).eq('id', id)
+  }).eq('id', id).select().single()
 
   if (error && error.message.includes('column')) {
     const corePayload: any = {}
@@ -70,14 +71,15 @@ export async function updateReel(id: string, payload: any) {
     if (payload.video !== undefined) corePayload.video = payload.video
     if (payload.thumbnail !== undefined) corePayload.thumbnail = payload.thumbnail
     corePayload.updated_at = new Date().toISOString()
-    const retry = await supabase.from('reels').update(corePayload).eq('id', id)
+    const retry = await supabase.from('reels').update(corePayload).eq('id', id).select().single()
     error = retry.error
+    data = retry.data
   }
 
   if (error) return { error: error.message }
   revalidatePath('/admin/reels')
   revalidatePath('/')
-  return { success: true }
+  return { success: true, reel: data }
 }
 
 export async function deleteReel(id: string) {
@@ -85,8 +87,33 @@ export async function deleteReel(id: string) {
   if (!auth.authorized) return { error: auth.error }
 
   const supabase = await createClient()
+  const { data: existing } = await supabase.from('reels').select('video, thumbnail').eq('id', id).single()
+
   const { error } = await supabase.from('reels').delete().eq('id', id)
   if (error) return { error: error.message }
+
+  // Clean up storage files if stored in Supabase Storage or R2
+  if (existing) {
+    try {
+      const cleanPath = (url: string) => {
+        if (!url) return null
+        const marker = '/storage/v1/object/public/reels/'
+        if (url.includes(marker)) {
+          return url.split(marker)[1]?.split('?')[0]
+        }
+        return null
+      }
+      const vPath = cleanPath(existing.video)
+      const tPath = cleanPath(existing.thumbnail)
+      const toRemove = [vPath, tPath].filter(Boolean) as string[]
+      if (toRemove.length > 0) {
+        await supabase.storage.from('reels').remove(toRemove)
+      }
+    } catch {
+      // Best-effort storage cleanup
+    }
+  }
+
   revalidatePath('/admin/reels')
   revalidatePath('/')
   return { success: true }

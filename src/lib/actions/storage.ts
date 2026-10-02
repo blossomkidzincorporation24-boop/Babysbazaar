@@ -33,8 +33,9 @@ export async function getUploadUrl(
   const ext = fileName.split('.').pop() || 'bin'
   const uniqueName = `${uuidv4()}.${ext}`
 
-  // 2. If R2 is NOT configured, generate a Supabase signed upload URL with admin privileges
-  if (!isR2Configured) {
+  // 2. Direct Supabase Storage signed upload URL for 'reels' (or fallback when R2 not configured)
+  // Ensures video streams directly from browser to storage with zero Next.js server memory load
+  if (bucket === 'reels' || !isR2Configured) {
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
       const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
@@ -44,7 +45,7 @@ export async function getUploadUrl(
 
       const { data: signedData, error: signError } = await adminSupabase.storage
         .from(bucket)
-        .createSignedUploadUrl(storagePath)
+        .createSignedUploadUrl(storagePath, { upsert: true })
 
       if (signError || !signedData?.signedUrl) {
         return { error: signError?.message || 'Failed to create upload URL' }
@@ -56,7 +57,8 @@ export async function getUploadUrl(
         useR2: false,
         signedUrl: signedData.signedUrl,
         path: storagePath,
-        publicUrl: pubData.publicUrl
+        publicUrl: pubData.publicUrl,
+        token: signedData.token
       }
     } catch (err: any) {
       return { error: err.message || 'Supabase storage authorization failed' }
@@ -90,6 +92,15 @@ export async function getUploadUrl(
   } catch (error) {
     return { error: 'Failed to generate upload URL for R2' }
   }
+}
+
+export async function getDirectUploadUrl(
+  fileName: string,
+  fileType: string,
+  bucket: Bucket = 'reels',
+  entityId?: string
+) {
+  return getUploadUrl(fileName, fileType, bucket, entityId)
 }
 
 export async function uploadFileServerSide(formData: FormData) {
