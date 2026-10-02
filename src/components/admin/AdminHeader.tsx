@@ -11,13 +11,13 @@ export default async function AdminHeader({ showAddProduct = true }: AdminHeader
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const displayName = user?.user_metadata?.full_name || 'Vinoth'
+  const displayName = user?.user_metadata?.full_name || "Baby's Bazaar"
 
   return (
     <header className="flex items-center justify-between px-8 py-5 bg-white border-b border-[#F0EDF5]/70 sticky top-0 z-30">
       <div>
         <h1 className="text-[22px] font-bold text-[#1C1C1E] tracking-tight">
-          Welcome back, {displayName}!
+          Welcome to Baby&apos;s Bazaar
         </h1>
         <p className="text-[12px] text-[#777777] mt-0.5">
           Manage your Baby&apos;s Bazaar website content from one place.

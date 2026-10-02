@@ -10,7 +10,7 @@ export default function FaqSection() {
   const faqs = [
     {
       q: 'How do I place an order or enquire about a product?',
-      a: 'Simply tap the "Enquire on WhatsApp" button on any product. This immediately connects you with our store team on WhatsApp (+91 84898 24888) with the exact product name, price, and link pre-filled so we can assist you directly.',
+      a: 'Simply tap the "Enquire on WhatsApp" button on any product. This immediately connects you with our store team on WhatsApp (+91 84890 24888) with the exact product name, price, and link pre-filled so we can assist you directly.',
     },
     {
       q: 'How does payment work?',
