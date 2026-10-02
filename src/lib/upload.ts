@@ -35,42 +35,151 @@ export function validateVideoFile(file: File): string | null {
   return null
 }
 
+export type UploadProgressCallback = (percent: number, loadedBytes: number, totalBytes: number) => void
+
+export function formatBytes(bytes: number, decimals = 1): string {
+  if (!bytes || bytes === 0) return '0 B'
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+}
+
+export async function generateThumbnailFromVideo(file: File): Promise<File | null> {
+  if (typeof window === 'undefined') return null
+  return new Promise((resolve) => {
+    try {
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.muted = true
+      video.playsInline = true
+      const url = URL.createObjectURL(file)
+      video.src = url
+
+      const cleanUp = () => {
+        try {
+          URL.revokeObjectURL(url)
+          video.remove()
+        } catch {}
+      }
+
+      video.onloadeddata = () => {
+        // Seek to 1s or 25% of the video to avoid black intro frames
+        const seekTime = (video.duration && video.duration > 2) ? 1.0 : Math.min(0.5, (video.duration || 1) / 2)
+        video.currentTime = seekTime
+      }
+
+      video.onseeked = () => {
+        try {
+          const canvas = document.createElement('canvas')
+          canvas.width = video.videoWidth || 720
+          canvas.height = video.videoHeight || 1280
+          const ctx = canvas.getContext('2d')
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            canvas.toBlob(
+              (blob) => {
+                cleanUp()
+                if (blob) {
+                  const cleanName = file.name.replace(/\.[^/.]+$/, '').slice(0, 30)
+                  const thumbFile = new File([blob], `thumb_${cleanName}.jpg`, {
+                    type: 'image/jpeg',
+                  })
+                  resolve(thumbFile)
+                } else {
+                  resolve(null)
+                }
+              },
+              'image/jpeg',
+              0.85
+            )
+          } else {
+            cleanUp()
+            resolve(null)
+          }
+        } catch {
+          cleanUp()
+          resolve(null)
+        }
+      }
+
+      video.onerror = () => {
+        cleanUp()
+        resolve(null)
+      }
+
+      // Safety timeout: 6 seconds max for thumbnail extraction
+      setTimeout(() => {
+        cleanUp()
+        resolve(null)
+      }, 6000)
+    } catch {
+      resolve(null)
+    }
+  })
+}
+
 export async function uploadFile(
   file: File,
   bucket: Bucket,
-  entity_id?: string
+  entity_id?: string,
+  onProgress?: UploadProgressCallback
 ): Promise<{ url: string; path: string } | { error: string }> {
-  // 1. Try direct presigned upload first
+  // 1. Try direct presigned upload first (Direct to R2 or Supabase)
   const res = await getUploadUrl(file.name, file.type, bucket, entity_id)
 
   if (!('error' in res) && res?.signedUrl) {
     try {
-      const uploadRes = await fetch(res.signedUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': file.type || 'application/octet-stream',
-        },
-        body: file,
+      const ok = await new Promise<boolean>((resolve) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('PUT', res.signedUrl, true)
+        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream')
+
+        if (xhr.upload && onProgress) {
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.min(99, Math.round((e.loaded / e.total) * 100))
+              onProgress(percent, e.loaded, e.total)
+            }
+          }
+        }
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            if (onProgress) onProgress(100, file.size, file.size)
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }
+
+        xhr.onerror = () => resolve(false)
+        xhr.ontimeout = () => resolve(false)
+        xhr.send(file)
       })
 
-      if (uploadRes.ok) {
+      if (ok) {
         return { url: res.publicUrl!, path: res.path! }
       }
     } catch (err) {
-      // Direct browser PUT hit CORS or fetch error; fallback seamlessly to server-side upload action
+      // Fallback seamlessly to server-side upload action
     }
   }
 
   // 2. Server-side upload fallback (bypasses browser CORS policy 100%)
+  if (onProgress) onProgress(30, Math.floor(file.size * 0.3), file.size)
   const formData = new FormData()
   formData.append('file', file)
   formData.append('bucket', bucket)
   if (entity_id) formData.append('entity_id', entity_id)
 
+  if (onProgress) onProgress(60, Math.floor(file.size * 0.6), file.size)
   const serverRes = await uploadFileServerSide(formData)
   if ('error' in serverRes && serverRes.error) {
     return { error: serverRes.error }
   }
+  if (onProgress) onProgress(100, file.size, file.size)
   return { url: serverRes.url!, path: serverRes.path! }
 }
 

@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '500mb',
+    },
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days edge cache for images

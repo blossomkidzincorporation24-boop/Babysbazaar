@@ -12,7 +12,13 @@ import {
   toggleReelStatus,
   reorderReels,
 } from '@/lib/actions/reels'
-import { uploadFile, validateImageFile, validateVideoFile } from '@/lib/upload'
+import {
+  uploadFile,
+  validateImageFile,
+  validateVideoFile,
+  formatBytes,
+  generateThumbnailFromVideo,
+} from '@/lib/upload'
 import ToggleSwitch from '@/components/admin/ToggleSwitch'
 import ConfirmDelete from '@/components/admin/ConfirmDelete'
 import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
@@ -34,7 +40,12 @@ export default function ReelsClient({ initialReels }: Props) {
 
   const [activePreviewVideo, setActivePreviewVideo] = useState<string | null>(null)
   const [uploadingVideo, setUploadingVideo] = useState(false)
+  const [videoProgress, setVideoProgress] = useState(0)
+  const [videoFileName, setVideoFileName] = useState<string | null>(null)
+  const [videoFileSize, setVideoFileSize] = useState<number | null>(null)
+  const [generatingThumb, setGeneratingThumb] = useState(false)
   const [uploadingThumb, setUploadingThumb] = useState(false)
+  const [thumbProgress, setThumbProgress] = useState(0)
   const [pending, startTransition] = useTransition()
 
   function openAdd() {
@@ -44,6 +55,9 @@ export default function ReelsClient({ initialReels }: Props) {
     setThumbnailUrl(null)
     setTitle('')
     setSubtitle('')
+    setVideoProgress(0)
+    setVideoFileName(null)
+    setVideoFileSize(null)
     setShowForm(true)
   }
 
@@ -54,6 +68,9 @@ export default function ReelsClient({ initialReels }: Props) {
     setThumbnailUrl(r.thumbnail)
     setTitle(r.title)
     setSubtitle((r as any).subtitle || '')
+    setVideoProgress(100)
+    setVideoFileName(null)
+    setVideoFileSize(null)
     setShowForm(true)
   }
 
@@ -71,9 +88,37 @@ export default function ReelsClient({ initialReels }: Props) {
       return
     }
 
+    setVideoFileName(file.name)
+    setVideoFileSize(file.size)
     setUploadingVideo(true)
-    const result = await uploadFile(file, 'reels')
+    setVideoProgress(0)
+
+    // Auto-extract and upload video thumbnail in background if no thumbnail is set
+    const thumbExtractionPromise = (async () => {
+      if (!thumbnailUrl) {
+        try {
+          setGeneratingThumb(true)
+          const thumbFile = await generateThumbnailFromVideo(file)
+          if (thumbFile) {
+            const thumbRes = await uploadFile(thumbFile, 'reels')
+            if (!('error' in thumbRes) && thumbRes.url) {
+              setThumbnailUrl(thumbRes.url)
+            }
+          }
+        } catch (e) {
+          // ignore silent thumbnail generation failure
+        } finally {
+          setGeneratingThumb(false)
+        }
+      }
+    })()
+
+    const result = await uploadFile(file, 'reels', undefined, (percent) => {
+      setVideoProgress(percent)
+    })
+
     setUploadingVideo(false)
+    await thumbExtractionPromise
 
     if ('error' in result) {
       toast.error(result.error)
@@ -94,7 +139,10 @@ export default function ReelsClient({ initialReels }: Props) {
     }
 
     setUploadingThumb(true)
-    const result = await uploadFile(file, 'reels')
+    setThumbProgress(0)
+    const result = await uploadFile(file, 'reels', undefined, (percent) => {
+      setThumbProgress(percent)
+    })
     setUploadingThumb(false)
 
     if ('error' in result) {
@@ -329,7 +377,7 @@ export default function ReelsClient({ initialReels }: Props) {
 
               {/* Video: File Upload or External URL */}
               <div>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-semibold text-gray-700">Video Source *</label>
                   <div className="flex gap-2 text-xs">
                     <button
@@ -351,16 +399,64 @@ export default function ReelsClient({ initialReels }: Props) {
                 </div>
 
                 {videoMode === 'upload' ? (
-                  <div>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoChange}
-                      disabled={uploadingVideo}
-                      className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer"
-                    />
-                    {uploadingVideo && <p className="text-xs text-purple-600 mt-1">Uploading video...</p>}
-                    {videoUrl && <p className="text-xs text-emerald-600 mt-1 font-medium">✓ Video selected</p>}
+                  <div className="space-y-2">
+                    {!uploadingVideo && !videoUrl ? (
+                      <div>
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm,video/quicktime,video/x-m4v,video/m4v,video/mkv,video/avi"
+                          onChange={handleVideoChange}
+                          className="w-full text-xs text-gray-600 file:mr-2.5 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer border border-gray-200 rounded-xl p-1.5"
+                        />
+                      </div>
+                    ) : uploadingVideo ? (
+                      <div className="border border-purple-200 bg-purple-50/60 rounded-xl p-3.5 space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-purple-900 truncate max-w-[200px]">
+                            {videoFileName || 'Uploading video...'}
+                          </span>
+                          <span className="font-bold text-purple-700">{videoProgress}%</span>
+                        </div>
+                        {/* Progress Bar */}
+                        <div className="w-full bg-purple-200/70 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-[#F40436] h-2 rounded-full transition-all duration-200 ease-out"
+                            style={{ width: `${Math.max(5, videoProgress)}%` }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-purple-600">
+                          <span>
+                            {videoFileSize
+                              ? `${formatBytes(Math.round(videoFileSize * (videoProgress / 100)))} of ${formatBytes(videoFileSize)}`
+                              : 'Uploading...'}
+                          </span>
+                          <span>Please keep this window open</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2.5">
+                        <div className="flex items-center gap-2 truncate pr-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                          <span className="text-xs font-semibold text-emerald-800 truncate">
+                            {videoFileName || 'Video uploaded'}
+                          </span>
+                          {videoFileSize && (
+                            <span className="text-[11px] text-emerald-600 shrink-0">
+                              ({formatBytes(videoFileSize)})
+                            </span>
+                          )}
+                        </div>
+                        <label className="text-xs text-[#F40436] hover:underline font-semibold cursor-pointer shrink-0">
+                          Change
+                          <input
+                            type="file"
+                            accept="video/*"
+                            onChange={handleVideoChange}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <input
@@ -375,9 +471,17 @@ export default function ReelsClient({ initialReels }: Props) {
 
               {/* Thumbnail */}
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Cover Thumbnail Image (Optional)
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-gray-700">
+                    Cover Thumbnail Image (Optional)
+                  </label>
+                  {generatingThumb && (
+                    <span className="text-[11px] text-purple-600 font-medium animate-pulse">
+                      Auto-extracting from video...
+                    </span>
+                  )}
+                </div>
+
                 <input
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,image/webp"
@@ -385,10 +489,33 @@ export default function ReelsClient({ initialReels }: Props) {
                   disabled={uploadingThumb}
                   className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer w-full"
                 />
-                {uploadingThumb && <p className="text-xs text-purple-600 mt-1 font-medium">Uploading thumbnail...</p>}
-                {thumbnailUrl && (
-                  <div className="relative w-20 h-28 rounded-lg overflow-hidden border border-gray-200 mt-2">
-                    <Image src={thumbnailUrl} alt="Thumbnail preview" fill className="object-cover" />
+
+                {uploadingThumb && (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex items-center justify-between text-xs text-purple-700 font-medium">
+                      <span>Uploading thumbnail...</span>
+                      <span>{thumbProgress}%</span>
+                    </div>
+                    <div className="w-full bg-purple-100 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="bg-purple-600 h-1.5 rounded-full transition-all duration-150"
+                        style={{ width: `${Math.max(5, thumbProgress)}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {thumbnailUrl && !uploadingThumb && (
+                  <div className="flex items-center gap-3 mt-2 p-2 bg-gray-50 border border-gray-100 rounded-xl">
+                    <div className="relative w-12 h-16 rounded-lg overflow-hidden border border-gray-200 bg-black shrink-0">
+                      <Image src={thumbnailUrl} alt="Thumbnail preview" fill className="object-cover" />
+                    </div>
+                    <div className="text-xs">
+                      <p className="font-semibold text-gray-800">Cover Thumbnail Ready</p>
+                      <p className="text-gray-400 text-[11px]">
+                        {generatingThumb ? 'Auto-generating from video frame' : 'Ready to be saved with reel'}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
