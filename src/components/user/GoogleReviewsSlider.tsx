@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Star, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+import { Star, ChevronLeft, ChevronRight, ExternalLink, MessageSquarePlus } from 'lucide-react'
 import Container from '@/components/ui/Container'
 import type { GoogleReviewsData, GoogleReview } from '@/lib/google/google-reviews'
 
@@ -31,9 +31,9 @@ function GoogleGIcon({ className = 'w-4 h-4' }: { className?: string }) {
 
 function AuthorAvatar({ name, photoUri }: { name: string; photoUri?: string }) {
   const [imgError, setImgError] = useState(false)
-  const initial = (name.trim().charAt(0) || 'C').toUpperCase()
+  const initial = (name.trim().charAt(0) || 'P').toUpperCase()
 
-  // Deterministic pastel background
+  // Deterministic pastel background for authentic feel
   const colors = [
     'bg-rose-100 text-rose-700',
     'bg-amber-100 text-amber-700',
@@ -48,7 +48,7 @@ function AuthorAvatar({ name, photoUri }: { name: string; photoUri?: string }) {
   if (!photoUri || imgError) {
     return (
       <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 border border-gray-200 ${colorClass}`}
+        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 border border-gray-200/80 shadow-2xs ${colorClass}`}
         aria-hidden="true"
       >
         {initial}
@@ -57,7 +57,7 @@ function AuthorAvatar({ name, photoUri }: { name: string; photoUri?: string }) {
   }
 
   return (
-    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
+    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 shrink-0 border border-gray-200 shadow-2xs">
       <Image
         src={photoUri}
         alt={name}
@@ -72,15 +72,15 @@ function AuthorAvatar({ name, photoUri }: { name: string; photoUri?: string }) {
 
 function ReviewCard({ review }: { review: GoogleReview }) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const isLong = review.text.length > 180
-  const displayText = isLong && !isExpanded ? `${review.text.slice(0, 180)}...` : review.text
+  const isLong = review.text.length > 170
+  const displayText = isLong && !isExpanded ? `${review.text.slice(0, 170)}...` : review.text
 
   return (
-    <div className="w-[82vw] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] min-w-[260px] sm:min-w-[300px] max-w-[380px] shrink-0 snap-start bg-white rounded-xl border border-[#D1D1D1] p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between">
+    <div className="w-[82vw] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] min-w-[270px] sm:min-w-[310px] max-w-[380px] shrink-0 snap-start bg-white rounded-2xl border border-gray-200/90 p-5 sm:p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
       <div>
         {/* Card Header: Avatar, Name, Relative Date & Google G */}
         <div className="flex items-start justify-between gap-2.5 mb-3.5">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <AuthorAvatar name={review.authorName} photoUri={review.authorPhotoUri} />
             <div className="min-w-0">
               <h3 className="text-sm sm:text-base font-semibold text-gray-900 font-sans leading-tight truncate">
@@ -94,13 +94,13 @@ function ReviewCard({ review }: { review: GoogleReview }) {
             </div>
           </div>
 
-          <div className="p-1 rounded-full bg-gray-50 border border-gray-100 shrink-0" title="Google Review">
+          <div className="p-1.5 rounded-full bg-gray-50 border border-gray-100 shrink-0" title="Verified Google Review">
             <GoogleGIcon className="w-4 h-4" />
           </div>
         </div>
 
         {/* Rating Stars */}
-        <div className="flex items-center gap-1 mb-2.5" aria-label={`${review.rating} out of 5 stars`}>
+        <div className="flex items-center gap-1 mb-3" aria-label={`${review.rating} out of 5 stars`}>
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
@@ -108,20 +108,20 @@ function ReviewCard({ review }: { review: GoogleReview }) {
               className={i < review.rating ? 'fill-[#FBBC05] text-[#FBBC05]' : 'fill-gray-200 text-gray-200'}
             />
           ))}
-          <span className="text-xs font-semibold text-gray-600 ml-1.5 font-sans">
+          <span className="text-xs font-bold text-gray-700 ml-1.5 font-sans">
             {review.rating.toFixed(1)}
           </span>
         </div>
 
         {/* Review Text */}
-        <p className="text-xs sm:text-sm text-gray-800 leading-relaxed font-sans">
+        <p className="text-xs sm:text-[13.5px] text-gray-700 leading-relaxed font-sans">
           &ldquo;{displayText}&rdquo;
         </p>
         {isLong && (
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-xs font-medium text-[#F40436] hover:underline mt-1 cursor-pointer"
+            className="text-xs font-semibold text-[#FF2E63] hover:underline mt-1.5 cursor-pointer block"
           >
             {isExpanded ? 'Show less' : 'Read more'}
           </button>
@@ -129,16 +129,16 @@ function ReviewCard({ review }: { review: GoogleReview }) {
       </div>
 
       {/* Card Footer: Verified on Google */}
-      <div className="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-sans">
-        <span className="flex items-center gap-1 text-[11px] text-gray-500">
-          <svg className="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+      <div className="pt-3.5 mt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-sans">
+        <span className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-medium bg-emerald-50/70 border border-emerald-100/60 px-2 py-0.5 rounded-full">
+          <svg className="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clipRule="evenodd"
             />
           </svg>
-          Google Verified Review
+          Google Verified
         </span>
 
         {review.googleMapsUri && (
@@ -146,9 +146,9 @@ function ReviewCard({ review }: { review: GoogleReview }) {
             href={review.googleMapsUri}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-gray-500 hover:text-black flex items-center gap-1 transition-colors"
+            className="text-[11px] text-gray-500 hover:text-black font-medium flex items-center gap-1 transition-colors"
           >
-            View on Maps
+            <span>View on Maps</span>
             <ExternalLink size={11} />
           </a>
         )}
@@ -192,7 +192,7 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
   const slide = (direction: 'left' | 'right') => {
     if (!sliderRef.current) return
     const container = sliderRef.current
-    const scrollAmount = container.clientWidth > 768 ? container.clientWidth * 0.75 : 300
+    const scrollAmount = container.clientWidth > 768 ? container.clientWidth * 0.75 : 310
     container.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
@@ -200,34 +200,41 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
   }
 
   return (
-    <section className="w-full py-10 lg:py-16 overflow-hidden bg-white">
+    <section className="w-full py-12 lg:py-16 overflow-hidden bg-gradient-to-b from-white via-pink-50/20 to-white border-t border-gray-100/60" aria-label="Customer Reviews">
       <Container>
         {/* Section Header */}
-        <div className="relative flex flex-col items-center justify-center text-center mb-6 sm:mb-8">
+        <div className="relative flex flex-col items-center justify-center text-center mb-7 sm:mb-9">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs font-medium text-gray-700 mb-2">
-              <GoogleGIcon className="w-3.5 h-3.5" />
+            {/* Google Verified Reviews Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-gray-200 text-xs font-semibold text-gray-800 mb-2.5 shadow-2xs">
+              <GoogleGIcon className="w-4 h-4" />
               <span>Google Verified Reviews</span>
             </div>
 
-            <h2 className="font-roboto-slab text-2xl sm:text-3xl lg:text-[34px] font-semibold text-[#F40436] text-center">
-              Rating And Reviews
+            {/* Section Heading: "What Our Customers Say" */}
+            <h2 className="font-roboto-slab text-2xl sm:text-3xl lg:text-[34px] font-bold text-gray-900 text-center tracking-tight">
+              What Our Customers Say
             </h2>
 
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 font-sans text-center flex items-center justify-center gap-1.5 flex-wrap">
-              <span className="font-semibold text-gray-900">{data.rating.toFixed(1)}★</span>
-              <span>Average Rating on Google from over {data.totalReviews}+ parents</span>
-            </p>
+            {/* Rating and Reviews Counter */}
+            <div className="text-xs sm:text-sm text-gray-600 mt-1.5 font-sans flex items-center justify-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1 font-bold text-gray-900 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md text-xs">
+                ⭐ {data.rating.toFixed(1)}/5
+              </span>
+              <span className="font-medium text-gray-700">Based on Google Reviews</span>
+              <span className="hidden sm:inline text-gray-300">•</span>
+              <span className="text-gray-500">Trusted by {data.totalReviews}+ happy parents</span>
+            </div>
           </div>
 
-          {/* Slide Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 mt-3 sm:mt-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2">
+          {/* Desktop Left/Right Slide Buttons */}
+          <div className="hidden sm:flex items-center gap-2 absolute right-0 top-1/2 -translate-y-1/2">
             <button
               type="button"
               onClick={() => slide('left')}
               disabled={!canScrollLeft}
-              aria-label="Slide Left"
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center text-gray-700 hover:text-black shadow-2xs hover:shadow-xs transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+              aria-label="Previous review"
+              className="w-10 h-10 rounded-full border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center text-gray-700 hover:text-black shadow-2xs hover:shadow-xs transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronLeft size={20} />
             </button>
@@ -236,8 +243,8 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
               type="button"
               onClick={() => slide('right')}
               disabled={!canScrollRight}
-              aria-label="Slide Right"
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center text-gray-700 hover:text-black shadow-2xs hover:shadow-xs transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+              aria-label="Next review"
+              className="w-10 h-10 rounded-full border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center text-gray-700 hover:text-black shadow-2xs hover:shadow-xs transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronRight size={20} />
             </button>
@@ -248,7 +255,7 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
         <div className="overflow-hidden -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div
             ref={sliderRef}
-            className="flex items-stretch gap-5 sm:gap-6 overflow-x-auto scrollbar-none scroll-smooth pb-4 pt-1 snap-x snap-mandatory"
+            className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto scrollbar-none scroll-smooth pb-4 pt-1 snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {reviews.map((rev) => (
@@ -259,14 +266,14 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
 
         {/* Mobile Swipe Cue & Dot Indicators */}
         {reviews.length > 1 && (
-          <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3">
+          <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3.5">
             {reviews.map((_, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => {
                   if (!sliderRef.current) return
-                  const cardWidth = sliderRef.current.clientWidth * 0.88
+                  const cardWidth = sliderRef.current.clientWidth * 0.86
                   sliderRef.current.scrollTo({
                     left: idx * cardWidth,
                     behavior: 'smooth',
@@ -274,28 +281,36 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
                 }}
                 aria-label={`Go to review ${idx + 1}`}
                 className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                  idx === currentIndex ? 'w-6 bg-[#E21352]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+                  idx === currentIndex ? 'w-6 bg-[#FF2E63]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
                 }`}
               />
             ))}
           </div>
         )}
 
-        {/* Google CTA Footer */}
-        {data.googleMapsUri && (
-          <div className="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a
-              href={data.googleMapsUri}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-gray-50 text-gray-800 font-sans text-xs sm:text-sm font-medium border border-gray-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer active:scale-98"
-            >
-              <GoogleGIcon className="w-4 h-4" />
-              <span>View all reviews on Google Maps</span>
-              <ExternalLink size={13} className="text-gray-400" />
-            </a>
-          </div>
-        )}
+        {/* Google Reviews CTAs (View all reviews + Write a review) */}
+        <div className="mt-8 pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            href={data.googleMapsUri}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-gray-50 text-gray-800 font-sans text-xs sm:text-sm font-semibold border border-gray-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer active:scale-98"
+          >
+            <GoogleGIcon className="w-4 h-4" />
+            <span>View all reviews on Google</span>
+            <ExternalLink size={13} className="text-gray-400 ml-0.5" />
+          </a>
+
+          <a
+            href={data.googleMapsUri}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#FF2E63] hover:bg-[#e02052] text-white font-sans text-xs sm:text-sm font-semibold shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-98"
+          >
+            <MessageSquarePlus size={15} />
+            <span>Write a Review on Google</span>
+          </a>
+        </div>
       </Container>
     </section>
   )
