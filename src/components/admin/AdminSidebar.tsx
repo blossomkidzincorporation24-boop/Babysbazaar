@@ -12,7 +12,6 @@ import {
   Tag,
   Sparkles,
   FolderArchive,
-  ClipboardCheck,
   Settings,
   Database,
   LogOut,
@@ -32,7 +31,6 @@ const navItems = [
   { href: '/admin/reels', label: 'Reels / Videos', icon: Film },
   { href: '/admin/media', label: 'Media Library', icon: FolderArchive },
   { href: '/admin/photos', label: 'Photos', icon: Camera },
-  { href: '/admin/work-reports', label: 'Work Reports', icon: ClipboardCheck },
   { href: '/admin/storage', label: 'Storage & Backup', icon: Database },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]

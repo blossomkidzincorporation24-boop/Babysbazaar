@@ -10,7 +10,7 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v', 'video/m4v', 'video/x-matroska', 'video/avi']
 const ALLOWED_EXTENSIONS = ['mp4', 'mov', 'webm', 'm4v', 'mkv', 'avi']
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024  // 5MB
-const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
+const MAX_VIDEO_SIZE = 1024 * 1024 * 1024 // 1 GB (1024 MB)
 
 export function validateImageFile(file: File): string | null {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -30,7 +30,7 @@ export function validateVideoFile(file: File): string | null {
     return 'Unsupported video format. Please upload an MP4, MOV or WebM video.'
   }
   if (file.size > MAX_VIDEO_SIZE) {
-    return 'Video must be smaller than 100MB.'
+    return 'Video must be smaller than 1 GB (1024 MB).'
   }
   return null
 }

@@ -70,8 +70,8 @@ export default function ImageGuidelinesPage() {
 
           <div className="p-4 rounded-xl bg-[#FAF9FA] border border-[#ECE8EA] space-y-1">
             <span className="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider">Maximum File Size</span>
-            <div className="text-sm font-bold text-[#E52D68]">5 MB per image</div>
-            <p className="text-[11px] text-[#8A8A8A]">Up to 100 MB for uploaded video reels</p>
+            <div className="text-sm font-bold text-[#E52D68]">5 MB (Images) / 1 GB (Reels)</div>
+            <p className="text-[11px] text-[#8A8A8A]">Up to 1 GB (1024 MB) for uploaded video reels</p>
           </div>
 
           <div className="p-4 rounded-xl bg-[#FAF9FA] border border-[#ECE8EA] space-y-1">
