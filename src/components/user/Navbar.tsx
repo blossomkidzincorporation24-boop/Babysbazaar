@@ -26,6 +26,7 @@ import {
   BUSINESS_ADDRESS,
   BUSINESS_PHONE_DISPLAY,
   BUSINESS_WHATSAPP_NUMBER,
+  BUSINESS_INSTAGRAM_URL,
   BUSINESS_GOOGLE_MAPS_URL,
 } from '@/lib/constants'
 
@@ -60,7 +61,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
   const [categoriesExpanded, setCategoriesExpanded] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  // Touch swipe handling
+  // Touch swipe handling for right-side drawer
   const touchStartX = useRef<number | null>(null)
   const touchCurrentX = useRef<number | null>(null)
 
@@ -121,7 +122,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
     }
   }
 
-  // Touch gesture handlers for closing drawer by swiping left
+  // Touch gesture handlers for closing right drawer by swiping right
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX
   }
@@ -133,8 +134,8 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchCurrentX.current !== null) {
       const diffX = touchStartX.current - touchCurrentX.current
-      if (diffX > 60) {
-        // Swiped left by at least 60px -> close drawer
+      if (diffX < -50) {
+        // Swiped right by at least 50px -> close right drawer
         setDrawerOpen(false)
       }
     }
@@ -161,7 +162,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
         }`}
       >
         <div className="max-w-[1340px] mx-auto px-3 sm:px-6">
-          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 gap-3">
+          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 gap-2 sm:gap-3">
             
             {/* BRAND LOGO */}
             <div className="flex items-center gap-3 shrink-0">
@@ -224,15 +225,15 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
               })}
             </nav>
 
-            {/* DESKTOP RIGHT ACTIONS (Search & Shop Now) */}
-            <div className="hidden lg:flex items-center gap-4 shrink-0">
+            {/* DESKTOP RIGHT ACTIONS (Search, Instagram, WhatsApp & Shop Now) */}
+            <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0">
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
                   placeholder="Search products, toys..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 xl:w-56 pl-9 pr-8 py-2 rounded-full bg-gray-100 border border-gray-200 text-xs sm:text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]/30 transition-all"
+                  className="w-44 xl:w-52 pl-9 pr-8 py-2 rounded-full bg-gray-100 border border-gray-200 text-xs sm:text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]/30 transition-all"
                   aria-label="Search products"
                 />
                 <button
@@ -254,6 +255,33 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                 )}
               </form>
 
+              {/* Instagram Icon */}
+              <a
+                href={BUSINESS_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-pink-600 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all shadow-2xs border border-pink-100"
+                aria-label="Open Baby's Bazaar on Instagram"
+              >
+                <svg width="19" height="19" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M14.12 6H25.88C30.36 6 34 9.64 34 14.12V25.88C34 28.0336 33.1445 30.0989 31.6217 31.6217C30.0989 33.1445 28.0336 34 25.88 34H14.12C9.64 34 6 30.36 6 25.88V14.12C6 11.9664 6.8555 9.90109 8.37829 8.37829C9.90109 6.8555 11.9664 6 14.12 6ZM13.84 8.8C12.5033 8.8 11.2214 9.331 10.2762 10.2762C9.331 11.2214 8.8 12.5033 8.8 13.84V26.16C8.8 28.946 11.054 31.2 13.84 31.2H26.16C27.4967 31.2 28.7786 30.669 29.7238 29.7238C30.669 28.7786 31.2 27.4967 31.2 26.16V13.84C31.2 11.054 28.946 8.8 26.16 8.8H13.84ZM27.35 10.9C27.8141 10.9 28.2593 11.0844 28.5874 11.4126C28.9156 11.7408 29.1 12.1859 29.1 12.65C29.1 13.1141 28.9156 13.5592 28.5874 13.8874C28.2593 14.2156 27.8141 14.4 27.35 14.4C26.8859 14.4 26.4408 14.2156 26.1126 13.8874C25.7844 13.5592 25.6 13.1141 25.6 12.65C25.6 12.1859 25.7844 11.7408 26.1126 11.4126C26.4408 11.0844 26.8859 10.9 27.35 10.9ZM20 13C21.8565 13 23.637 13.7375 24.9497 15.0503C26.2625 16.363 27 18.1435 27 20C27 21.8565 26.2625 23.637 24.9497 24.9497C23.637 26.2625 21.8565 27 20 27C18.1435 27 16.363 26.2625 15.0503 24.9497C13.7375 23.637 13 21.8565 13 20C13 18.1435 13.7375 16.363 15.0503 15.0503C16.363 13.7375 18.1435 13 20 13ZM20 15.8C18.8861 15.8 17.8178 16.2425 17.0302 17.0302C16.2425 17.8178 15.8 18.8861 15.8 20C15.8 21.1139 16.2425 22.1822 17.0302 22.9698C17.8178 23.7575 18.8861 24.2 20 24.2C21.1139 24.2 22.1822 23.7575 22.9698 22.9698C23.7575 22.1822 24.2 21.1139 24.2 20C24.2 18.8861 23.7575 17.8178 22.9698 17.0302C22.1822 16.2425 21.1139 15.8 20 15.8Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+
+              {/* WhatsApp Icon */}
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] hover:bg-green-50 hover:scale-105 active:scale-95 transition-all shadow-2xs border border-green-100"
+                aria-label="Chat on WhatsApp"
+              >
+                <MessageCircle size={19} fill="currentColor" />
+              </a>
+
               {/* Desktop "Shop Now" */}
               <Link
                 href="/categories"
@@ -265,17 +293,46 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             </div>
 
             {/* =================================================================== */}
-            {/* MOBILE HEADER RIGHT: CLEAN HAMBURGER BUTTON ONLY (44px TOUCH TARGET) */}
+            {/* MOBILE HEADER RIGHT: INSTAGRAM + WHATSAPP + HAMBURGER               */}
             {/* =================================================================== */}
-            <div className="flex lg:hidden items-center">
+            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+              
+              {/* Instagram Mobile Header Icon */}
+              <a
+                href={BUSINESS_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-pink-600 bg-pink-50/70 hover:bg-pink-100 active:scale-95 transition-all"
+                aria-label="Open Baby's Bazaar Instagram"
+              >
+                <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M14.12 6H25.88C30.36 6 34 9.64 34 14.12V25.88C34 28.0336 33.1445 30.0989 31.6217 31.6217C30.0989 33.1445 28.0336 34 25.88 34H14.12C9.64 34 6 30.36 6 25.88V14.12C6 11.9664 6.8555 9.90109 8.37829 8.37829C9.90109 6.8555 11.9664 6 14.12 6ZM13.84 8.8C12.5033 8.8 11.2214 9.331 10.2762 10.2762C9.331 11.2214 8.8 12.5033 8.8 13.84V26.16C8.8 28.946 11.054 31.2 13.84 31.2H26.16C27.4967 31.2 28.7786 30.669 29.7238 29.7238C30.669 28.7786 31.2 27.4967 31.2 26.16V13.84C31.2 11.054 28.946 8.8 26.16 8.8H13.84ZM27.35 10.9C27.8141 10.9 28.2593 11.0844 28.5874 11.4126C28.9156 11.7408 29.1 12.1859 29.1 12.65C29.1 13.1141 28.9156 13.5592 28.5874 13.8874C28.2593 14.2156 27.8141 14.4 27.35 14.4C26.8859 14.4 26.4408 14.2156 26.1126 13.8874C25.7844 13.5592 25.6 13.1141 25.6 12.65C25.6 12.1859 25.7844 11.7408 26.1126 11.4126C26.4408 11.0844 26.8859 10.9 27.35 10.9ZM20 13C21.8565 13 23.637 13.7375 24.9497 15.0503C26.2625 16.363 27 18.1435 27 20C27 21.8565 26.2625 23.637 24.9497 24.9497C23.637 26.2625 21.8565 27 20 27C18.1435 27 16.363 26.2625 15.0503 24.9497C13.7375 23.637 13 21.8565 13 20C13 18.1435 13.7375 16.363 15.0503 15.0503C16.363 13.7375 18.1435 13 20 13ZM20 15.8C18.8861 15.8 17.8178 16.2425 17.0302 17.0302C16.2425 17.8178 15.8 18.8861 15.8 20C15.8 21.1139 16.2425 22.1822 17.0302 22.9698C17.8178 23.7575 18.8861 24.2 20 24.2C21.1139 24.2 22.1822 23.7575 22.9698 22.9698C23.7575 22.1822 24.2 21.1139 24.2 20C24.2 18.8861 23.7575 17.8178 22.9698 17.0302C22.1822 16.2425 21.1139 15.8 20 15.8Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+
+              {/* WhatsApp Mobile Header Icon */}
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] bg-green-50/80 hover:bg-green-100 active:scale-95 transition-all"
+                aria-label="Direct WhatsApp Enquiry"
+              >
+                <MessageCircle size={20} fill="currentColor" />
+              </a>
+
+              {/* Hamburger Button (44px min touch target) */}
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className="w-11 h-11 flex items-center justify-center rounded-full text-gray-800 hover:text-[#FF2E63] hover:bg-pink-50/80 active:scale-95 transition-all cursor-pointer -mr-1"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-800 hover:text-[#FF2E63] hover:bg-pink-50/80 active:scale-95 transition-all cursor-pointer -mr-1"
                 aria-label="Open menu"
                 aria-expanded={drawerOpen}
               >
-                <Menu size={26} strokeWidth={2.2} />
+                <Menu size={25} strokeWidth={2.2} />
               </button>
             </div>
           </div>
@@ -283,7 +340,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
       </header>
 
       {/* ======================================================================= */}
-      {/* 2. INSTAGRAM-STYLE SLIDE-OUT LEFT NAVIGATION DRAWER                     */}
+      {/* 2. RIGHT-SIDE SLIDE-OUT NAVIGATION DRAWER                               */}
       {/* ======================================================================= */}
       
       {/* Fullscreen Backdrop */}
@@ -295,7 +352,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
         aria-hidden="true"
       />
 
-      {/* Left Drawer Container */}
+      {/* RIGHT Drawer Container (slides from right to left) */}
       <aside
         id="mobile-navigation-drawer"
         role="dialog"
@@ -304,8 +361,8 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`fixed top-0 left-0 bottom-0 z-[1060] w-[86vw] max-w-[350px] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
-          drawerOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 right-0 bottom-0 z-[1060] w-[86vw] max-w-[350px] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
+          drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* DRAWER TOP: Brand Header & Close Button */}
@@ -367,7 +424,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             )}
           </form>
 
-          {/* PRIMARY NAVIGATION LINKS WITH SUBTLE STAGGER */}
+          {/* PRIMARY NAVIGATION LINKS */}
           <nav className="space-y-1 pt-1" aria-label="Mobile Menu Links">
             
             {/* 1. Home */}
@@ -530,8 +587,36 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             </Link>
           </nav>
 
-          {/* WHATSAPP ACTION BUTTON IN DRAWER */}
-          <div className="pt-2">
+          {/* SOCIAL ACTIONS IN DRAWER */}
+          <div className="pt-2 grid grid-cols-2 gap-2">
+            <a
+              href={BUSINESS_INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-2.5 px-3 rounded-xl bg-pink-50 text-pink-600 border border-pink-100 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs hover:bg-pink-100 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M14.12 6H25.88C30.36 6 34 9.64 34 14.12V25.88C34 28.0336 33.1445 30.0989 31.6217 31.6217C30.0989 33.1445 28.0336 34 25.88 34H14.12C9.64 34 6 30.36 6 25.88V14.12C6 11.9664 6.8555 9.90109 8.37829 8.37829C9.90109 6.8555 11.9664 6 14.12 6ZM13.84 8.8C12.5033 8.8 11.2214 9.331 10.2762 10.2762C9.331 11.2214 8.8 12.5033 8.8 13.84V26.16C8.8 28.946 11.054 31.2 13.84 31.2H26.16C27.4967 31.2 28.7786 30.669 29.7238 29.7238C30.669 28.7786 31.2 27.4967 31.2 26.16V13.84C31.2 11.054 28.946 8.8 26.16 8.8H13.84ZM27.35 10.9C27.8141 10.9 28.2593 11.0844 28.5874 11.4126C28.9156 11.7408 29.1 12.1859 29.1 12.65C29.1 13.1141 28.9156 13.5592 28.5874 13.8874C28.2593 14.2156 27.8141 14.4 27.35 14.4C26.8859 14.4 26.4408 14.2156 26.1126 13.8874C25.7844 13.5592 25.6 13.1141 25.6 12.65C25.6 12.1859 25.7844 11.7408 26.1126 11.4126C26.4408 11.0844 26.8859 10.9 27.35 10.9ZM20 13C21.8565 13 23.637 13.7375 24.9497 15.0503C26.2625 16.363 27 18.1435 27 20C27 21.8565 26.2625 23.637 24.9497 24.9497C23.637 26.2625 21.8565 27 20 27C18.1435 27 16.363 26.2625 15.0503 24.9497C13.7375 23.637 13 21.8565 13 20C13 18.1435 13.7375 16.363 15.0503 15.0503C16.363 13.7375 18.1435 13 20 13ZM20 15.8C18.8861 15.8 17.8178 16.2425 17.0302 17.0302C16.2425 17.8178 15.8 18.8861 15.8 20C15.8 21.1139 16.2425 22.1822 17.0302 22.9698C17.8178 23.7575 18.8861 24.2 20 24.2C21.1139 24.2 22.1822 23.7575 22.9698 22.9698C23.7575 22.1822 24.2 21.1139 24.2 20C24.2 18.8861 23.7575 17.8178 22.9698 17.0302C22.1822 16.2425 21.1139 15.8 20 15.8Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>Instagram</span>
+            </a>
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-2.5 px-3 rounded-xl bg-green-50 text-[#25D366] border border-green-100 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs hover:bg-green-100 transition-colors"
+            >
+              <MessageCircle size={16} fill="currentColor" />
+              <span>WhatsApp</span>
+            </a>
+          </div>
+
+          {/* FULL WHATSAPP ENQUIRY BUTTON */}
+          <div>
             <a
               href={whatsappUrl}
               target="_blank"
