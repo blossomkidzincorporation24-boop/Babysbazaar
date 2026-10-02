@@ -15,6 +15,7 @@ import {
 import { uploadFile, validateImageFile, validateVideoFile } from '@/lib/upload'
 import ToggleSwitch from '@/components/admin/ToggleSwitch'
 import ConfirmDelete from '@/components/admin/ConfirmDelete'
+import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
 
 interface Props {
   initialReels: Reel[]
@@ -379,18 +380,21 @@ export default function ReelsClient({ initialReels }: Props) {
                 </label>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
                   onChange={handleThumbChange}
                   disabled={uploadingThumb}
-                  className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer"
+                  className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer w-full"
                 />
-                {uploadingThumb && <p className="text-xs text-purple-600 mt-1">Uploading thumbnail...</p>}
+                {uploadingThumb && <p className="text-xs text-purple-600 mt-1 font-medium">Uploading thumbnail...</p>}
                 {thumbnailUrl && (
                   <div className="relative w-20 h-28 rounded-lg overflow-hidden border border-gray-200 mt-2">
                     <Image src={thumbnailUrl} alt="Thumbnail preview" fill className="object-cover" />
                   </div>
                 )}
               </div>
+
+              {/* Reel / Video Guideline Card */}
+              <ImageGuidelineCard type="reel" compact />
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
-import { Settings as SettingsIcon, Lock, LogOut, Loader2 } from 'lucide-react'
+import { Settings as SettingsIcon, Lock, LogOut, Loader2, Image as ImageIcon, ExternalLink } from 'lucide-react'
 import { updateSettings, updatePassword } from '@/lib/actions/settings'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -129,15 +130,41 @@ export default function SettingsClient({ initialSettings }: Props) {
           </div>
         </div>
 
-        {/* Right column — Logout */}
-        <div>
+        {/* Right column — Image Guide & Logout */}
+        <div className="space-y-6">
+          {/* Image Guidelines Quick Card */}
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[#FCE8EF] text-[#E52D68] flex items-center justify-center font-bold">
+                <ImageIcon size={16} />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800">Image Size Guide</h3>
+                <p className="text-xs text-gray-400">Dimensions & format specs</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+              Find recommended pixel dimensions, aspect ratios, and file guidelines for products, banners, categories, and reels.
+            </p>
+
+            <Link
+              href="/admin/settings/image-guidelines"
+              className="w-full flex items-center justify-center gap-2 bg-[#FAF9FA] hover:bg-[#FCE8EF] text-[#202124] hover:text-[#E52D68] border border-[#ECE8EA] text-xs font-semibold py-2.5 rounded-lg transition-colors"
+            >
+              <span>View Image Guidelines</span>
+              <ExternalLink size={13} />
+            </Link>
+          </div>
+
+          {/* Logout */}
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center">
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <LogOut size={20} className="text-gray-500" />
             </div>
             <h3 className="text-sm font-semibold text-gray-800 mb-1">Log out of admin</h3>
             <p className="text-xs text-gray-400 mb-4">You&apos;ll return to the secure Baby&apos;s Bazaar login screen.</p>
-            <button onClick={handleLogout} className="w-full border border-gray-200 text-gray-700 text-sm font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+            <button onClick={handleLogout} className="w-full border border-gray-200 text-gray-700 text-sm font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
               Log out
             </button>
           </div>

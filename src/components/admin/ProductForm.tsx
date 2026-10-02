@@ -9,6 +9,8 @@ import { createProduct, updateProduct } from '@/lib/actions/products'
 import { uploadFile, validateImageFile } from '@/lib/upload'
 import { Category, Product } from '@/types/database.types'
 import { formatPrice } from '@/lib/utils'
+import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
+import ImageMetadataPreview from '@/components/admin/ImageMetadataPreview'
 
 const CLOTHING_AGE_OPTIONS = [
   '1–3 Months',
@@ -229,37 +231,59 @@ export default function ProductForm({ categories, product }: Props) {
               </div>
             </div>
 
-            <div className="pl-12">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                {images.map((url, idx) => (
-                  <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-[#ECE8EA] group bg-[#FAF9FA]">
-                    <Image src={url} alt="Preview" fill className="object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => setImages(images.filter((_, i) => i !== idx))}
-                      className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"
-                    >
-                      <X size={14} strokeWidth={2.5} />
-                    </button>
+            <div className="pl-12 space-y-5">
+              {images.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-[#202124]">
+                      Uploaded Photos ({images.length})
+                    </span>
+                    <span className="text-[11px] text-[#8A8A8A]">First image is primary thumbnail</span>
                   </div>
-                ))}
-              </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-2">
+                    {images.map((url, idx) => (
+                      <div key={idx} className="relative">
+                        {idx === 0 && (
+                          <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md bg-[#E52D68] text-white text-[10px] font-bold shadow-xs">
+                            Primary
+                          </div>
+                        )}
+                        <ImageMetadataPreview
+                          url={url}
+                          recommendedWidth={1200}
+                          recommendedHeight={1200}
+                          recommendedLabel="1200 × 1200 px (1:1)"
+                          onRemove={() => setImages(images.filter((_, i) => i !== idx))}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <label className="block border-2 border-dashed border-[#ECE8EA] hover:border-[#E52D68]/40 hover:bg-[#FAF9FA] rounded-xl p-8 text-center cursor-pointer transition-colors group">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#FAF9FA] group-hover:bg-white flex items-center justify-center text-[#E52D68] border border-[#ECE8EA] transition-colors">
                   {uploadingImage ? <Loader2 className="animate-spin" size={20} /> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>}
                 </div>
-                <h4 className="text-sm font-semibold text-[#202124] mb-1">Upload product image</h4>
-                <p className="text-xs text-[#8A8A8A]">Click to add a high-quality JPG or PNG</p>
+                <h4 className="text-sm font-semibold text-[#202124] mb-1">
+                  {images.length === 0 ? 'Upload primary product image' : 'Add additional gallery image'}
+                </h4>
+                <p className="text-xs text-[#8A8A8A]">Recommended 1200 × 1200 px (1:1 Square) • Max 5 MB</p>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
                   onChange={handleImageUpload}
                   disabled={uploadingImage}
                   className="hidden"
                 />
               </label>
-              {errors.images && <p className="text-xs text-red-500 mt-2 font-medium">{errors.images}</p>}
+              {errors.images && <p className="text-xs text-red-500 font-medium">{errors.images}</p>}
+
+              {/* Guidelines Info Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <ImageGuidelineCard type="product" compact />
+                <ImageGuidelineCard type="product_gallery" compact />
+              </div>
             </div>
           </div>
 

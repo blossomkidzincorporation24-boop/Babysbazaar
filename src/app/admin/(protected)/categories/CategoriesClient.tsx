@@ -23,6 +23,8 @@ import {
   toggleCategoryStatus,
 } from '@/lib/actions/categories'
 import { uploadFile, validateImageFile } from '@/lib/upload'
+import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
+import ImageMetadataPreview from '@/components/admin/ImageMetadataPreview'
 
 interface Props {
   initialCategories: Category[]
@@ -294,19 +296,17 @@ export default function CategoriesClient({ initialCategories }: Props) {
 
             <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
               {/* Image Upload */}
-              <div>
-                <label className="block text-[13px] font-semibold text-[#202124] mb-2">Category Image</label>
+              <div className="space-y-3">
+                <label className="block text-[13px] font-semibold text-[#202124]">Category Image</label>
                 {formImage ? (
-                  <div className="relative h-44 rounded-xl overflow-hidden border border-[#ECE8EA] group">
-                    <Image src={formImage} alt="Preview" fill className="object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => setFormImage(null)}
-                      className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
+                  <ImageMetadataPreview
+                    url={formImage}
+                    recommendedWidth={800}
+                    recommendedHeight={800}
+                    recommendedLabel="800 × 800 px (1:1)"
+                    aspectRatioClass="h-44"
+                    onRemove={() => setFormImage(null)}
+                  />
                 ) : (
                   <label className="flex flex-col items-center justify-center h-44 border-2 border-dashed border-[#ECE8EA] hover:border-[#E52D68]/40 rounded-xl cursor-pointer transition-colors bg-[#FAF9FA] hover:bg-white group">
                     {uploading ? (
@@ -316,19 +316,22 @@ export default function CategoriesClient({ initialCategories }: Props) {
                         <div className="w-10 h-10 rounded-full bg-white border border-[#ECE8EA] flex items-center justify-center text-[#E52D68] mb-2 group-hover:border-[#E52D68]/30 transition-colors">
                           <Plus size={20} />
                         </div>
-                        <span className="text-sm font-medium text-[#202124]">Upload image</span>
-                        <span className="text-xs text-[#8A8A8A] mt-0.5">JPG, PNG or WebP</span>
+                        <span className="text-sm font-medium text-[#202124]">Upload category image</span>
+                        <span className="text-xs text-[#8A8A8A] mt-0.5">Recommended 800 × 800 px (1:1) • Max 5 MB</span>
                       </>
                     )}
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={handleImageUpload}
                       disabled={uploading}
                       className="hidden"
                     />
                   </label>
                 )}
+
+                {/* Category Image Guideline Card */}
+                <ImageGuidelineCard type="category" compact />
               </div>
 
               {/* Category Name */}

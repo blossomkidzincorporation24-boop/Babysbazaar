@@ -16,6 +16,8 @@ import {
 import { uploadFile, validateImageFile } from '@/lib/upload'
 import ToggleSwitch from '@/components/admin/ToggleSwitch'
 import ConfirmDelete from '@/components/admin/ConfirmDelete'
+import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
+import ImageMetadataPreview from '@/components/admin/ImageMetadataPreview'
 
 interface Props {
   initialOffers: OfferBanner[]
@@ -353,42 +355,58 @@ export default function OffersClient({ initialOffers }: Props) {
               </div>
 
               {/* Image Upload */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Desktop Banner Image *
-                  </label>
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-[#FAF9FA] border border-[#ECE8EA] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-gray-800">
+                      Offer Banner Image *
+                    </label>
+                    <span className="text-[11px] font-semibold text-[#E52D68]">1600 × 600 px (8:3)</span>
+                  </div>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
                     onChange={(e) => handleImageUpload(e, false)}
-                    className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer"
+                    className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer w-full"
                   />
-                  <p className="text-[11px] text-gray-500 mt-1">Recommended size: 1920 × 800 px</p>
-                  {uploadingImage && <p className="text-xs text-purple-600 mt-1">Uploading...</p>}
+                  {uploadingImage && <p className="text-xs text-purple-600 font-medium">Uploading image...</p>}
                   {imageUrl && (
-                    <div className="relative w-full h-24 rounded-lg overflow-hidden border border-gray-200 mt-2">
-                      <Image src={imageUrl} alt="Desktop Preview" fill className="object-cover" />
-                    </div>
+                    <ImageMetadataPreview
+                      url={imageUrl}
+                      recommendedWidth={1600}
+                      recommendedHeight={600}
+                      recommendedLabel="1600 × 600 px (8:3)"
+                      aspectRatioClass="h-28"
+                      onRemove={() => setImageUrl(null)}
+                    />
                   )}
+
+                  <ImageGuidelineCard type="offer_banner" compact />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Mobile Banner Image (Optional)
-                  </label>
+                <div className="p-4 rounded-xl bg-[#FAF9FA] border border-[#ECE8EA] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-gray-800">
+                      Mobile Banner Image (Optional)
+                    </label>
+                    <span className="text-[11px] font-semibold text-[#E52D68]">1080 × 1350 px (4:5)</span>
+                  </div>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
                     onChange={(e) => handleImageUpload(e, true)}
-                    className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer"
+                    className="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer w-full"
                   />
-                  <p className="text-[11px] text-gray-500 mt-1">Recommended size: 1080 × 1350 px</p>
-                  {uploadingMobile && <p className="text-xs text-purple-600 mt-1">Uploading...</p>}
+                  {uploadingMobile && <p className="text-xs text-purple-600 font-medium">Uploading mobile image...</p>}
                   {mobileImageUrl && (
-                    <div className="relative w-full h-24 rounded-lg overflow-hidden border border-gray-200 mt-2">
-                      <Image src={mobileImageUrl} alt="Mobile Preview" fill className="object-cover" />
-                    </div>
+                    <ImageMetadataPreview
+                      url={mobileImageUrl}
+                      recommendedWidth={1080}
+                      recommendedHeight={1350}
+                      recommendedLabel="1080 × 1350 px (4:5)"
+                      aspectRatioClass="h-32"
+                      onRemove={() => setMobileImageUrl(null)}
+                    />
                   )}
                 </div>
               </div>

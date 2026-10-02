@@ -9,6 +9,8 @@ import { createPhoto, updatePhoto, deletePhoto, togglePhotoStatus } from '@/lib/
 import { uploadFile, validateImageFile } from '@/lib/upload'
 import ToggleSwitch from '@/components/admin/ToggleSwitch'
 import ConfirmDelete from '@/components/admin/ConfirmDelete'
+import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
+import ImageMetadataPreview from '@/components/admin/ImageMetadataPreview'
 
 interface Props { initialPhotos: Photo[] }
 
@@ -82,19 +84,30 @@ export default function PhotosClient({ initialPhotos }: Props) {
             <h2 className="text-lg font-semibold text-gray-800 mb-4">{editing ? 'Edit Photo' : 'Upload Photo'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!editing && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Photo *</label>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-gray-800">Photo *</label>
+                    <span className="text-[11px] font-semibold text-[#E52D68]">1600 × 1200 px (4:3)</span>
+                  </div>
                   {imageUrl ? (
-                    <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200">
-                      <Image src={imageUrl} alt="Preview" fill className="object-cover" />
-                    </div>
+                    <ImageMetadataPreview
+                      url={imageUrl}
+                      recommendedWidth={1600}
+                      recommendedHeight={1200}
+                      recommendedLabel="1600 × 1200 px (4:3)"
+                      aspectRatioClass="h-44"
+                      onRemove={() => setImageUrl(null)}
+                    />
                   ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-colors">
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#E52D68] hover:bg-pink-50/40 transition-colors">
                       <Camera size={28} className="text-gray-400 mb-2" />
-                      <span className="text-sm text-gray-500">{uploading ? 'Uploading…' : 'Click to upload photo'}</span>
-                      <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} className="hidden" />
+                      <span className="text-sm font-medium text-gray-700">{uploading ? 'Uploading…' : 'Click to upload photo'}</span>
+                      <span className="text-xs text-gray-400 mt-0.5">Recommended 1600 × 1200 px (4:3) • Max 5 MB</span>
+                      <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} disabled={uploading} className="hidden" />
                     </label>
                   )}
+
+                  <ImageGuidelineCard type="photo" compact />
                 </div>
               )}
               <div>

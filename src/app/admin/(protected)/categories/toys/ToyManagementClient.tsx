@@ -30,6 +30,7 @@ import {
 } from '@/lib/actions/toys'
 import { cleanToyDescription } from '@/lib/utils'
 import { uploadFile, validateImageFile } from '@/lib/upload'
+import ImageGuidelineCard from '@/components/admin/ImageGuidelineCard'
 
 interface Props {
   mainCategory: Category | null
@@ -598,8 +599,8 @@ export default function ToyManagementClient({
               </div>
 
               {/* Image Upload */}
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Category Image
                 </label>
                 <div className="flex items-center gap-4">
@@ -626,7 +627,7 @@ export default function ToyManagementClient({
                           Click to upload image
                         </span>
                         <span className="text-[11px] text-gray-400 mt-0.5">
-                          JPEG, PNG or WebP under 5MB
+                          Recommended 800 × 800 px (1:1) • Max 5 MB
                         </span>
                       </>
                     )}
@@ -639,6 +640,8 @@ export default function ToyManagementClient({
                     />
                   </label>
                 </div>
+
+                <ImageGuidelineCard type="category_thumbnail" compact />
               </div>
 
               {/* Status Toggle */}
