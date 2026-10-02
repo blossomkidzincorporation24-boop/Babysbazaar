@@ -29,9 +29,18 @@ interface PhotoItem {
   status?: string | null
 }
 
+export interface CategoryOfferItem {
+  id: string
+  name: string
+  slug: string
+  image?: string | null
+  description?: string | null
+}
+
 interface AboutUsClientProps {
   whatsappNumber?: string | null
   photos?: PhotoItem[]
+  categories?: CategoryOfferItem[]
 }
 
 // 8 "What We Offer" Departments from Figma Frame 1686556764
@@ -152,7 +161,7 @@ const WHY_US_FEATURES = [
 
 import { BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
 
-export default function AboutUsClient({ whatsappNumber, photos = [] }: AboutUsClientProps) {
+export default function AboutUsClient({ whatsappNumber, photos = [], categories = [] }: AboutUsClientProps) {
   const cleanPhone = whatsappNumber?.replace(/\D/g, '') || BUSINESS_WHATSAPP_NUMBER
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
     "Hi Baby's Bazaar, I'd like to chat and know more about your collection!"
@@ -264,44 +273,65 @@ export default function AboutUsClient({ whatsappNumber, photos = [] }: AboutUsCl
             </p>
           </div>
 
-          {/* 8 Cards Grid */}
+          {/* Dynamic Database Categories Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-            {WHAT_WE_OFFER.map((item, idx) => {
-              const IconComponent = item.icon
+            {(categories && categories.length > 0 ? categories : WHAT_WE_OFFER).map((item: any, idx: number) => {
+              const isDbCategory = Boolean(item.id && !item.boxBg)
+              const title = item.name || item.title || 'Baby Category'
+              const slug = item.slug || ''
+              const description = item.description || 'Quality baby products and essentials for your little ones.'
+              const imageSrc = item.image
+              const IconComponent = item.icon || ShoppingBag
+              const linkHref = slug === 'baby-toys' || slug === 'toys' ? '/toys' : `/category/${slug}`
+
               return (
                 <div
-                  key={idx}
+                  key={item.id || idx}
                   className="bg-[#FFF8FA] border border-[#FDE8EF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-300 group"
                 >
                   <div>
-                    {/* Top Icon in rounded pastel box */}
-                    <div
-                      className={`w-10 h-10 rounded-xl ${item.boxBg} ${item.iconColor} flex items-center justify-center mb-4 transition-transform group-hover:scale-105`}
-                    >
-                      <IconComponent size={20} strokeWidth={2.2} />
-                    </div>
+                    {/* Category Image or Icon Header */}
+                    {imageSrc ? (
+                      <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-4 bg-white border border-[#FDE8EF] shadow-2xs">
+                        <Image
+                          src={imageSrc}
+                          alt={`${title} - Baby's Bazaar`}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={`w-10 h-10 rounded-xl ${item.boxBg || 'bg-[#FEE2E2]'} ${item.iconColor || 'text-[#EF4444]'} flex items-center justify-center mb-4 transition-transform group-hover:scale-105`}
+                      >
+                        <IconComponent size={20} strokeWidth={2.2} />
+                      </div>
+                    )}
 
                     {/* Tag */}
                     <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-                      {item.tag}
+                      {item.tag || 'BABY STORE'}
                     </p>
 
                     {/* Title */}
                     <h3 className="font-roboto-slab text-base sm:text-lg font-bold text-gray-900 group-hover:text-[#E1144B] transition-colors mb-2">
-                      {item.title}
+                      {title}
                     </h3>
 
                     {/* Description */}
                     <p className="font-sans text-xs text-gray-600 leading-relaxed line-clamp-3">
-                      {item.description}
+                      {description}
                     </p>
                   </div>
 
                   {/* Bottom Meta & Link */}
-                  <div className="pt-6 mt-4 border-t border-[#F8E3EC] flex items-center justify-between text-[11px]">
-                    <span className="font-sans text-gray-400">{item.meta}</span>
+                  <div className="pt-5 mt-4 border-t border-[#F8E3EC] flex items-center justify-between text-[11px]">
+                    <span className="font-sans text-gray-400 font-medium">
+                      {item.meta || 'Verified Catalog'}
+                    </span>
                     <Link
-                      href={item.slug === 'baby-toys' || item.slug === 'toys' ? '/toys' : `/category/${item.slug}`}
+                      href={linkHref}
                       className="font-sans font-semibold text-[#E1144B] hover:text-[#B80D3C] flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform"
                     >
                       <span>Explore Category</span>
