@@ -105,7 +105,7 @@ END $$;
 -- 9. INITIAL SEED DATA (Store Team Members)
 INSERT INTO team_users (name, email, role, phone, status)
 VALUES 
-  ('Kavimalar (Store Manager)', 'manager@babysbazaar.shop', 'manager', '+91 84898 24888', 'active'),
-  ('Store Staff - Sales & Customer Desk', 'sales@babysbazaar.shop', 'sales', '+91 84898 24888', 'active'),
-  ('Inventory & Stock Specialist', 'inventory@babysbazaar.shop', 'inventory', '+91 84898 24888', 'active')
+  ('Kavimalar (Store Manager)', 'manager@babysbazaar.shop', 'manager', '+91 84890 24888', 'active'),
+  ('Store Staff - Sales & Customer Desk', 'sales@babysbazaar.shop', 'sales', '+91 84890 24888', 'active'),
+  ('Inventory & Stock Specialist', 'inventory@babysbazaar.shop', 'inventory', '+91 84890 24888', 'active')
 ON CONFLICT (email) DO NOTHING;
