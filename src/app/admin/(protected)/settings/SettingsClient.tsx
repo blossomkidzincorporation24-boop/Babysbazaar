@@ -18,11 +18,21 @@ export default function SettingsClient({ initialSettings }: Props) {
   const [pendingPwd, startPwd] = useTransition()
 
   // Store Info
-  const [storeName, setStoreName] = useState(initialSettings?.store_name ?? '')
-  const [whatsapp, setWhatsapp] = useState(initialSettings?.whatsapp_number ?? '')
-  const [phone, setPhone] = useState(initialSettings?.phone ?? '')
-  const [email, setEmail] = useState(initialSettings?.email ?? '')
-  const [address, setAddress] = useState(initialSettings?.address ?? '')
+  const [storeName, setStoreName] = useState(initialSettings?.store_name || "Baby's Bazaar")
+  const [whatsapp, setWhatsapp] = useState(
+    initialSettings?.whatsapp_number && !initialSettings.whatsapp_number.includes('84898')
+      ? initialSettings.whatsapp_number
+      : '918489024888'
+  )
+  const [phone, setPhone] = useState(
+    initialSettings?.phone && !initialSettings.phone.includes('84898')
+      ? initialSettings.phone
+      : '+91 84890 24888'
+  )
+  const [email, setEmail] = useState(initialSettings?.email || 'support@babysbazaar.shop')
+  const [address, setAddress] = useState(
+    initialSettings?.address || '160, Perundurai Road, Near Sudha Hospital, Edayankattuvalasu, Erode, Tamil Nadu 638011'
+  )
 
   // Password
   const [currentPwd, setCurrentPwd] = useState('')
@@ -80,14 +90,14 @@ export default function SettingsClient({ initialSettings }: Props) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp number</label>
-                  <input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="+91 98765 43210" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                  <input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="918489024888" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Contact information</label>
-                <input value={email} onChange={e => setEmail(e.target.value)} placeholder="hello@babysbazaar.in" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2" />
-                <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2" />
-                <input value={address} onChange={e => setAddress(e.target.value)} placeholder="Store address" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                <input value={email} onChange={e => setEmail(e.target.value)} placeholder="support@babysbazaar.shop" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2" />
+                <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 84890 24888" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2" />
+                <input value={address} onChange={e => setAddress(e.target.value)} placeholder="160, Perundurai Road, Near Sudha Hospital, Erode, Tamil Nadu 638011" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
               </div>
               <div className="flex justify-end">
                 <button type="submit" disabled={pendingInfo} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white text-sm font-medium px-5 py-2.5 rounded-lg">

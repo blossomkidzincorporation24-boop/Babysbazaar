@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 
+import { BUSINESS_ADDRESS, BUSINESS_PHONE_DISPLAY, BUSINESS_WHATSAPP_NUMBER } from '@/lib/constants'
+
 export async function getSettings() {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -11,7 +13,37 @@ export async function getSettings() {
     .select('*')
     .limit(1)
     .single()
-  if (error) return null
+  if (error || !data) return null
+
+  if (data.phone && data.phone.includes('84898')) {
+    data.phone = BUSINESS_PHONE_DISPLAY
+  }
+  if (data.whatsapp_number && data.whatsapp_number.includes('84898')) {
+    data.whatsapp_number = BUSINESS_WHATSAPP_NUMBER
+  }
+  return data
+}
+
+export async function getPublicSettings() {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('settings')
+    .select('store_name, logo, whatsapp_number, phone, email, address')
+    .limit(1)
+    .single()
+
+  if (data) {
+    if (!data.address || data.address.includes('60, Perundurai') || data.address.includes('60 Perundurai')) {
+      data.address = BUSINESS_ADDRESS
+    }
+    if (!data.phone || data.phone.includes('84898')) {
+      data.phone = BUSINESS_PHONE_DISPLAY
+    }
+    if (!data.whatsapp_number || data.whatsapp_number.includes('84898')) {
+      data.whatsapp_number = BUSINESS_WHATSAPP_NUMBER
+    }
+  }
+
   return data
 }
 
@@ -67,21 +99,3 @@ export async function updatePassword(currentPassword: string, newPassword: strin
   return { success: true }
 }
 
-import { BUSINESS_ADDRESS } from '@/lib/constants'
-
-export async function getPublicSettings() {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('settings')
-    .select('store_name, logo, whatsapp_number, phone, email, address')
-    .limit(1)
-    .single()
-
-  if (data) {
-    if (!data.address || data.address.includes('60, Perundurai') || data.address.includes('60 Perundurai')) {
-      data.address = BUSINESS_ADDRESS
-    }
-  }
-
-  return data
-}
