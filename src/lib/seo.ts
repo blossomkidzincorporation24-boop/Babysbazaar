@@ -109,7 +109,7 @@ export function generateLocalBusinessSchema(settings?: {
       latitude: 11.3418,
       longitude: 77.7172,
     },
-    hasMap: 'https://maps.app.goo.gl/tWp471w5Uu3L9eA67',
+    hasMap: 'https://share.google/eP3MqILACWkyxcp84',
     areaServed: [
       {
         '@type': 'City',

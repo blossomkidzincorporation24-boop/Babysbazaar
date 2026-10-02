@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Star, ChevronLeft, ChevronRight, ExternalLink, MessageSquarePlus } from 'lucide-react'
 import Container from '@/components/ui/Container'
+import { BUSINESS_GOOGLE_MAPS_URL } from '@/lib/constants'
 import type { GoogleReviewsData, GoogleReview } from '@/lib/google/google-reviews'
 
 function GoogleGIcon({ className = 'w-4 h-4' }: { className?: string }) {
@@ -141,17 +142,15 @@ function ReviewCard({ review }: { review: GoogleReview }) {
           Google Verified
         </span>
 
-        {review.googleMapsUri && (
-          <a
-            href={review.googleMapsUri}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] text-gray-500 hover:text-black font-medium flex items-center gap-1 transition-colors"
-          >
-            <span>View on Maps</span>
-            <ExternalLink size={11} />
-          </a>
-        )}
+        <a
+          href={review.googleMapsUri || BUSINESS_GOOGLE_MAPS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] text-gray-500 hover:text-black font-medium flex items-center gap-1 transition-colors"
+        >
+          <span>View on Maps</span>
+          <ExternalLink size={11} />
+        </a>
       </div>
     </div>
   )
@@ -291,7 +290,7 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
         {/* Google Reviews CTAs (View all reviews + Write a review) */}
         <div className="mt-8 pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href={data.googleMapsUri}
+            href={data.googleMapsUri || BUSINESS_GOOGLE_MAPS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-gray-50 text-gray-800 font-sans text-xs sm:text-sm font-semibold border border-gray-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer active:scale-98"
@@ -302,7 +301,7 @@ export default function GoogleReviewsSlider({ data }: { data: GoogleReviewsData 
           </a>
 
           <a
-            href={data.googleMapsUri}
+            href={data.googleMapsUri || BUSINESS_GOOGLE_MAPS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#FF2E63] hover:bg-[#e02052] text-white font-sans text-xs sm:text-sm font-semibold shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-98"
