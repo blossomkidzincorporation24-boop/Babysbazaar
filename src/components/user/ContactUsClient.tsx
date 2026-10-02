@@ -204,10 +204,10 @@ export default function ContactUsClient({ settings }: ContactUsClientProps) {
                   />
                 </div>
 
-                {/* Field 2: What is your problem (Dropdown) */}
+                {/* Field 2: Select an enquiry type (Dropdown) */}
                 <div>
                   <label className="block font-poppins text-sm sm:text-base font-medium text-[#0D0D0D] mb-1.5">
-                    What is your problem
+                    Select an enquiry type
                   </label>
                   <div className="relative">
                     <select
@@ -215,13 +215,16 @@ export default function ContactUsClient({ settings }: ContactUsClientProps) {
                       onChange={(e) => setProblemType(e.target.value)}
                       className="w-full h-12 px-4 pr-10 rounded-md border border-[#D1D1D1] bg-white text-gray-900 text-sm sm:text-base appearance-none focus:outline-none focus:border-[#E21352] focus:ring-1 focus:ring-[#E21352] transition-colors cursor-pointer"
                     >
-                      <option value="">Enter your Product Size / Inquiry</option>
-                      <option value="Product Size & Fit Help">Product Size & Fit Help</option>
-                      <option value="Order Status & Delivery Tracking">Order Status & Delivery Tracking</option>
-                      <option value="Fabric & Material Composition">Fabric & Material Composition</option>
-                      <option value="Exchange or Return Assistance">Exchange or Return Assistance</option>
-                      <option value="Custom Gift Hamper Inquiries">Custom Gift Hamper Inquiries</option>
-                      <option value="Damaged or Incorrect Item">Damaged or Incorrect Item</option>
+                      <option value="">Select an enquiry type</option>
+                      <option value="Product Enquiry">Product Enquiry</option>
+                      <option value="Product Size & Age Guidance">Product Size & Age Guidance</option>
+                      <option value="Product Availability">Product Availability</option>
+                      <option value="Product Details">Product Details</option>
+                      <option value="Price & Information">Price & Information</option>
+                      <option value="Delivery Information">Delivery Information</option>
+                      <option value="Exchange / Return Assistance">Exchange / Return Assistance</option>
+                      <option value="Damaged or Incorrect Product">Damaged or Incorrect Product</option>
+                      <option value="Gift / Bulk Enquiry">Gift / Bulk Enquiry</option>
                       <option value="Other Assistance">Other Assistance</option>
                     </select>
                     <ChevronDown
