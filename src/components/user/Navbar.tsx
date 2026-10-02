@@ -324,10 +324,10 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                 href={BUSINESS_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full hover:scale-110 active:scale-95 transition-all shadow-2xs border border-pink-100 bg-pink-50/50 hover:bg-pink-100/70"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-2xs cursor-pointer"
                 aria-label="Open Baby's Bazaar on Instagram"
               >
-                <InstagramBrandIcon size={20} />
+                <InstagramWhiteIcon size={18} />
               </a>
 
               {/* WhatsApp Icon */}
@@ -335,36 +335,27 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] hover:bg-green-50 hover:scale-110 active:scale-95 transition-all shadow-2xs border border-green-100 bg-green-50/50"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-[#25D366] text-white hover:bg-[#20bd5a] hover:scale-105 active:scale-95 transition-all shadow-2xs cursor-pointer"
                 aria-label="Chat on WhatsApp"
               >
-                <WhatsAppBrandIcon size={20} />
+                <WhatsAppBrandIcon size={19} className="text-white" />
               </a>
-
-              {/* Desktop "Shop Now" */}
-              <Link
-                href="/categories"
-                className="bg-[#FF2E63] hover:bg-[#e02052] active:scale-95 text-white font-sans text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-full shadow-xs hover:shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
-              >
-                <ShoppingBag size={15} />
-                <span>Shop Now</span>
-              </Link>
             </div>
 
             {/* =================================================================== */}
             {/* MOBILE HEADER RIGHT: UNIQUE INSTAGRAM + WHATSAPP + HAMBURGER       */}
             {/* =================================================================== */}
-            <div className="flex lg:hidden items-center gap-1.5">
+            <div className="flex lg:hidden items-center gap-2">
               
               {/* Unique Instagram Mobile Header Button */}
               <a
                 href={BUSINESS_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-tr from-amber-500/10 via-pink-500/15 to-purple-500/15 border border-pink-200/60 active:scale-90 transition-transform shadow-2xs"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white shadow-xs active:scale-90 transition-all cursor-pointer"
                 aria-label="Baby's Bazaar Instagram"
               >
-                <InstagramBrandIcon size={20} />
+                <InstagramWhiteIcon size={18} />
               </a>
 
               {/* Unique WhatsApp Mobile Header Button */}
@@ -372,10 +363,10 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] bg-green-50 border border-green-200/80 active:scale-90 transition-transform shadow-2xs"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-[#25D366] text-white shadow-xs active:scale-90 transition-all cursor-pointer"
                 aria-label="Direct WhatsApp Concierge"
               >
-                <WhatsAppBrandIcon size={20} />
+                <WhatsAppBrandIcon size={19} className="text-white" />
               </a>
 
               {/* Modern Hamburger Button (44px min touch target) */}
