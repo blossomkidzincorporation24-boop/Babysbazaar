@@ -18,7 +18,6 @@ import {
   Info,
   MapPin,
   Clock,
-  Heart,
   Grid,
 } from 'lucide-react'
 import {
@@ -29,6 +28,71 @@ import {
   BUSINESS_INSTAGRAM_URL,
   BUSINESS_GOOGLE_MAPS_URL,
 } from '@/lib/constants'
+
+// =======================================================================
+// UNIQUE BRANDED ICONS FOR INSTAGRAM & WHATSAPP
+// =======================================================================
+
+function InstagramBrandIcon({ size = 20, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <defs>
+        <linearGradient id="igGradientUnique" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#f09433" />
+          <stop offset="25%" stopColor="#e6683c" />
+          <stop offset="50%" stopColor="#dc2743" />
+          <stop offset="75%" stopColor="#cc2366" />
+          <stop offset="100%" stopColor="#bc1888" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="6" stroke="url(#igGradientUnique)" strokeWidth="2.2" />
+      <circle cx="12" cy="12" r="4.2" stroke="url(#igGradientUnique)" strokeWidth="2.2" />
+      <circle cx="17.5" cy="6.5" r="1.3" fill="url(#igGradientUnique)" />
+    </svg>
+  )
+}
+
+function InstagramWhiteIcon({ size = 20, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect x="2" y="2" width="20" height="20" rx="6" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" strokeWidth="3" />
+    </svg>
+  )
+}
+
+function WhatsAppBrandIcon({ size = 20, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01zm-7.01 15.24c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c.01 4.54-3.68 8.23-8.22 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.65 4.2 3.71.59.25 1.05.4 1.41.51.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.12-.23-.19-.48-.31z" />
+    </svg>
+  )
+}
 
 interface CategoryLink {
   name: string
@@ -260,15 +324,10 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                 href={BUSINESS_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-pink-600 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all shadow-2xs border border-pink-100"
+                className="w-9 h-9 flex items-center justify-center rounded-full hover:scale-110 active:scale-95 transition-all shadow-2xs border border-pink-100 bg-pink-50/50 hover:bg-pink-100/70"
                 aria-label="Open Baby's Bazaar on Instagram"
               >
-                <svg width="19" height="19" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M14.12 6H25.88C30.36 6 34 9.64 34 14.12V25.88C34 28.0336 33.1445 30.0989 31.6217 31.6217C30.0989 33.1445 28.0336 34 25.88 34H14.12C9.64 34 6 30.36 6 25.88V14.12C6 11.9664 6.8555 9.90109 8.37829 8.37829C9.90109 6.8555 11.9664 6 14.12 6ZM13.84 8.8C12.5033 8.8 11.2214 9.331 10.2762 10.2762C9.331 11.2214 8.8 12.5033 8.8 13.84V26.16C8.8 28.946 11.054 31.2 13.84 31.2H26.16C27.4967 31.2 28.7786 30.669 29.7238 29.7238C30.669 28.7786 31.2 27.4967 31.2 26.16V13.84C31.2 11.054 28.946 8.8 26.16 8.8H13.84ZM27.35 10.9C27.8141 10.9 28.2593 11.0844 28.5874 11.4126C28.9156 11.7408 29.1 12.1859 29.1 12.65C29.1 13.1141 28.9156 13.5592 28.5874 13.8874C28.2593 14.2156 27.8141 14.4 27.35 14.4C26.8859 14.4 26.4408 14.2156 26.1126 13.8874C25.7844 13.5592 25.6 13.1141 25.6 12.65C25.6 12.1859 25.7844 11.7408 26.1126 11.4126C26.4408 11.0844 26.8859 10.9 27.35 10.9ZM20 13C21.8565 13 23.637 13.7375 24.9497 15.0503C26.2625 16.363 27 18.1435 27 20C27 21.8565 26.2625 23.637 24.9497 24.9497C23.637 26.2625 21.8565 27 20 27C18.1435 27 16.363 26.2625 15.0503 24.9497C13.7375 23.637 13 21.8565 13 20C13 18.1435 13.7375 16.363 15.0503 15.0503C16.363 13.7375 18.1435 13 20 13ZM20 15.8C18.8861 15.8 17.8178 16.2425 17.0302 17.0302C16.2425 17.8178 15.8 18.8861 15.8 20C15.8 21.1139 16.2425 22.1822 17.0302 22.9698C17.8178 23.7575 18.8861 24.2 20 24.2C21.1139 24.2 22.1822 23.7575 22.9698 22.9698C23.7575 22.1822 24.2 21.1139 24.2 20C24.2 18.8861 23.7575 17.8178 22.9698 17.0302C22.1822 16.2425 21.1139 15.8 20 15.8Z"
-                    fill="currentColor"
-                  />
-                </svg>
+                <InstagramBrandIcon size={20} />
               </a>
 
               {/* WhatsApp Icon */}
@@ -276,10 +335,10 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] hover:bg-green-50 hover:scale-105 active:scale-95 transition-all shadow-2xs border border-green-100"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] hover:bg-green-50 hover:scale-110 active:scale-95 transition-all shadow-2xs border border-green-100 bg-green-50/50"
                 aria-label="Chat on WhatsApp"
               >
-                <MessageCircle size={19} fill="currentColor" />
+                <WhatsAppBrandIcon size={20} />
               </a>
 
               {/* Desktop "Shop Now" */}
@@ -293,46 +352,41 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             </div>
 
             {/* =================================================================== */}
-            {/* MOBILE HEADER RIGHT: INSTAGRAM + WHATSAPP + HAMBURGER               */}
+            {/* MOBILE HEADER RIGHT: UNIQUE INSTAGRAM + WHATSAPP + HAMBURGER       */}
             {/* =================================================================== */}
-            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+            <div className="flex lg:hidden items-center gap-1.5">
               
-              {/* Instagram Mobile Header Icon */}
+              {/* Unique Instagram Mobile Header Button */}
               <a
                 href={BUSINESS_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-pink-600 bg-pink-50/70 hover:bg-pink-100 active:scale-95 transition-all"
-                aria-label="Open Baby's Bazaar Instagram"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-tr from-amber-500/10 via-pink-500/15 to-purple-500/15 border border-pink-200/60 active:scale-90 transition-transform shadow-2xs"
+                aria-label="Baby's Bazaar Instagram"
               >
-                <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M14.12 6H25.88C30.36 6 34 9.64 34 14.12V25.88C34 28.0336 33.1445 30.0989 31.6217 31.6217C30.0989 33.1445 28.0336 34 25.88 34H14.12C9.64 34 6 30.36 6 25.88V14.12C6 11.9664 6.8555 9.90109 8.37829 8.37829C9.90109 6.8555 11.9664 6 14.12 6ZM13.84 8.8C12.5033 8.8 11.2214 9.331 10.2762 10.2762C9.331 11.2214 8.8 12.5033 8.8 13.84V26.16C8.8 28.946 11.054 31.2 13.84 31.2H26.16C27.4967 31.2 28.7786 30.669 29.7238 29.7238C30.669 28.7786 31.2 27.4967 31.2 26.16V13.84C31.2 11.054 28.946 8.8 26.16 8.8H13.84ZM27.35 10.9C27.8141 10.9 28.2593 11.0844 28.5874 11.4126C28.9156 11.7408 29.1 12.1859 29.1 12.65C29.1 13.1141 28.9156 13.5592 28.5874 13.8874C28.2593 14.2156 27.8141 14.4 27.35 14.4C26.8859 14.4 26.4408 14.2156 26.1126 13.8874C25.7844 13.5592 25.6 13.1141 25.6 12.65C25.6 12.1859 25.7844 11.7408 26.1126 11.4126C26.4408 11.0844 26.8859 10.9 27.35 10.9ZM20 13C21.8565 13 23.637 13.7375 24.9497 15.0503C26.2625 16.363 27 18.1435 27 20C27 21.8565 26.2625 23.637 24.9497 24.9497C23.637 26.2625 21.8565 27 20 27C18.1435 27 16.363 26.2625 15.0503 24.9497C13.7375 23.637 13 21.8565 13 20C13 18.1435 13.7375 16.363 15.0503 15.0503C16.363 13.7375 18.1435 13 20 13ZM20 15.8C18.8861 15.8 17.8178 16.2425 17.0302 17.0302C16.2425 17.8178 15.8 18.8861 15.8 20C15.8 21.1139 16.2425 22.1822 17.0302 22.9698C17.8178 23.7575 18.8861 24.2 20 24.2C21.1139 24.2 22.1822 23.7575 22.9698 22.9698C23.7575 22.1822 24.2 21.1139 24.2 20C24.2 18.8861 23.7575 17.8178 22.9698 17.0302C22.1822 16.2425 21.1139 15.8 20 15.8Z"
-                    fill="currentColor"
-                  />
-                </svg>
+                <InstagramBrandIcon size={20} />
               </a>
 
-              {/* WhatsApp Mobile Header Icon */}
+              {/* Unique WhatsApp Mobile Header Button */}
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] bg-green-50/80 hover:bg-green-100 active:scale-95 transition-all"
-                aria-label="Direct WhatsApp Enquiry"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#25D366] bg-green-50 border border-green-200/80 active:scale-90 transition-transform shadow-2xs"
+                aria-label="Direct WhatsApp Concierge"
               >
-                <MessageCircle size={20} fill="currentColor" />
+                <WhatsAppBrandIcon size={20} />
               </a>
 
-              {/* Hamburger Button (44px min touch target) */}
+              {/* Modern Hamburger Button (44px min touch target) */}
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-800 hover:text-[#FF2E63] hover:bg-pink-50/80 active:scale-95 transition-all cursor-pointer -mr-1"
-                aria-label="Open menu"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-800 hover:text-[#FF2E63] hover:bg-pink-50 active:scale-90 transition-all cursor-pointer -mr-1"
+                aria-label="Open navigation menu"
                 aria-expanded={drawerOpen}
               >
-                <Menu size={25} strokeWidth={2.2} />
+                <Menu size={24} strokeWidth={2.4} />
               </button>
             </div>
           </div>
@@ -340,12 +394,12 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
       </header>
 
       {/* ======================================================================= */}
-      {/* 2. RIGHT-SIDE SLIDE-OUT NAVIGATION DRAWER                               */}
+      {/* 2. RIGHT-SIDE SLIDE-OUT NAVIGATION DRAWER (UNIQUE LAYOUT)               */}
       {/* ======================================================================= */}
       
       {/* Fullscreen Backdrop */}
       <div
-        className={`fixed inset-0 z-[1050] bg-black/45 backdrop-blur-[2px] transition-opacity duration-300 ease-out lg:hidden ${
+        className={`fixed inset-0 z-[1050] bg-black/50 backdrop-blur-[3px] transition-opacity duration-300 ease-out lg:hidden ${
           drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setDrawerOpen(false)}
@@ -361,12 +415,12 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`fixed top-0 right-0 bottom-0 z-[1060] w-[86vw] max-w-[350px] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
+        className={`fixed top-0 right-0 bottom-0 z-[1060] w-[88vw] max-w-[360px] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* DRAWER TOP: Brand Header & Close Button */}
-        <div className="shrink-0 border-b border-gray-100 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-3.5 flex items-center justify-between">
+        <div className="shrink-0 border-b border-gray-100/90 px-4 pt-[max(0.85rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between bg-gradient-to-b from-pink-50/40 to-white">
           <Link
             href="/"
             onClick={() => setDrawerOpen(false)}
@@ -385,24 +439,70 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
           <button
             type="button"
             onClick={() => setDrawerOpen(false)}
-            className="w-10 h-10 -mr-1 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 active:scale-95 transition-all cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 active:scale-90 transition-all cursor-pointer"
             aria-label="Close menu"
           >
-            <X size={22} strokeWidth={2.2} />
+            <X size={20} strokeWidth={2.4} />
           </button>
         </div>
 
         {/* DRAWER SCROLLABLE BODY */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-none overscroll-contain">
+        <div className="flex-1 overflow-y-auto px-4 py-3.5 space-y-3.5 scrollbar-none overscroll-contain">
           
-          {/* Quick Search in Drawer */}
+          {/* 1. UNIQUE QUICK CONNECT HUB (INSTAGRAM + WHATSAPP DUAL HERO CARDS) */}
+          <div className="grid grid-cols-2 gap-2.5">
+            
+            {/* INSTAGRAM HERO CARD */}
+            <a
+              href={BUSINESS_INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative overflow-hidden rounded-2xl p-3 bg-gradient-to-br from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white shadow-xs hover:shadow-md active:scale-98 transition-all flex flex-col justify-between min-h-[92px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <InstagramWhiteIcon size={18} />
+                </div>
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded-full bg-white/25">
+                  Follow
+                </span>
+              </div>
+              <div className="pt-2">
+                <div className="text-xs font-bold leading-tight">Instagram</div>
+                <div className="text-[11px] text-white/90 truncate font-medium">@babys.bazaar</div>
+              </div>
+            </a>
+
+            {/* WHATSAPP HERO CARD */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative overflow-hidden rounded-2xl p-3 bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white shadow-xs hover:shadow-md active:scale-98 transition-all flex flex-col justify-between min-h-[92px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <WhatsAppBrandIcon size={18} className="text-white" />
+                </div>
+                <span className="text-[10px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded-full bg-white/25">
+                  Chat
+                </span>
+              </div>
+              <div className="pt-2">
+                <div className="text-xs font-bold leading-tight">WhatsApp</div>
+                <div className="text-[11px] text-white/90 truncate font-medium">Fast Enquiries</div>
+              </div>
+            </a>
+          </div>
+
+          {/* 2. SEARCH BAR */}
           <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
-              placeholder="Search products, toys..."
+              placeholder="Search products, toys, baby care..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2.5 rounded-full bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]/30 focus:border-[#FF2E63] transition-all"
+              className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF2E63]/30 focus:border-[#FF2E63] transition-all"
               aria-label="Search catalogue"
             />
             <button
@@ -424,20 +524,20 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
             )}
           </form>
 
-          {/* PRIMARY NAVIGATION LINKS */}
-          <nav className="space-y-1 pt-1" aria-label="Mobile Menu Links">
+          {/* 3. PRIMARY MENU ITEMS (UNIQUE MODERN STRUCTURE) */}
+          <nav className="space-y-1" aria-label="Mobile Menu Links">
             
-            {/* 1. Home */}
+            {/* A. Home */}
             <Link
               href="/"
               onClick={() => setDrawerOpen(false)}
-              className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 pathname === '/'
-                  ? 'bg-pink-50/90 text-[#FF2E63]'
+                  ? 'bg-pink-50 text-[#FF2E63] shadow-2xs'
                   : 'text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63]'
               }`}
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                 pathname === '/' ? 'bg-[#FF2E63] text-white' : 'bg-pink-50 text-[#FF2E63]'
               }`}>
                 <Home size={17} strokeWidth={2.2} />
@@ -445,49 +545,36 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
               <span className="flex-1">Home</span>
             </Link>
 
-            {/* 2. Shop / All Products */}
-            <Link
-              href="/categories"
-              onClick={() => setDrawerOpen(false)}
-              className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
-                pathname === '/categories' && !pathname.includes('toys')
-                  ? 'bg-pink-50/90 text-[#FF2E63]'
-                  : 'text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63]'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                pathname === '/categories' ? 'bg-[#FF2E63] text-white' : 'bg-pink-50 text-[#FF2E63]'
-              }`}>
-                <ShoppingBag size={17} strokeWidth={2.2} />
-              </div>
-              <span className="flex-1">Shop All Products</span>
-            </Link>
-
-            {/* 3. Expandable Categories Accordion */}
-            <div className="rounded-xl overflow-hidden">
+            {/* B. Expandable Categories Accordion */}
+            <div className="rounded-xl overflow-hidden border border-gray-100 bg-white">
               <button
                 type="button"
                 onClick={() => setCategoriesExpanded(!categoriesExpanded)}
-                className="w-full flex items-center justify-between gap-3.5 px-3.5 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63] transition-all cursor-pointer"
+                className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63] transition-all cursor-pointer"
                 aria-expanded={categoriesExpanded}
               >
-                <div className="flex items-center gap-3.5">
+                <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-pink-50 text-[#FF2E63] flex items-center justify-center">
                     <Grid size={17} strokeWidth={2.2} />
                   </div>
                   <span>Categories</span>
                 </div>
-                <ChevronDown
-                  size={16}
-                  className={`text-gray-400 transition-transform duration-200 ${
-                    categoriesExpanded ? 'rotate-180 text-[#FF2E63]' : ''
-                  }`}
-                />
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">
+                    10 Items
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className={`text-gray-400 transition-transform duration-200 ${
+                      categoriesExpanded ? 'rotate-180 text-[#FF2E63]' : ''
+                    }`}
+                  />
+                </div>
               </button>
 
               {/* Subcategories Accordion Content */}
               {categoriesExpanded && (
-                <div className="pl-12 pr-2 py-1.5 space-y-1 bg-gray-50/60 rounded-xl mb-1 border-l-2 border-[#FF2E63]/30 ml-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="px-2.5 py-1.5 space-y-0.5 bg-gray-50/70 border-t border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200">
                   {STORE_CATEGORIES.map((cat) => (
                     <Link
                       key={cat.href}
@@ -505,18 +592,28 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
                       )}
                     </Link>
                   ))}
+                  
+                  {/* View All Categories Link */}
+                  <Link
+                    href="/categories"
+                    onClick={() => setDrawerOpen(false)}
+                    className="flex items-center justify-center gap-1.5 py-2 mt-1 rounded-lg text-xs font-bold text-[#FF2E63] bg-pink-50/70 hover:bg-pink-100 transition-colors"
+                  >
+                    <span>Explore All 10 Categories</span>
+                    <ChevronRight size={13} />
+                  </Link>
                 </div>
               )}
             </div>
 
-            {/* 4. Toys Collection */}
+            {/* C. Toys Collection */}
             <Link
               href="/toys"
               onClick={() => setDrawerOpen(false)}
-              className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 pathname.startsWith('/toys')
-                  ? 'bg-pink-50/90 text-[#FF2E63]'
-                  : 'text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63]'
+                  ? 'bg-amber-50 text-[#D97706] shadow-2xs'
+                  : 'text-gray-800 hover:bg-gray-50 hover:text-[#D97706]'
               }`}
             >
               <div className="w-8 h-8 rounded-lg bg-[#FEF3C7] text-[#D97706] flex items-center justify-center text-sm">
@@ -528,39 +625,28 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
               </span>
             </Link>
 
-            {/* 5. New Arrivals */}
+            {/* D. New Arrivals */}
             <Link
               href="/#new-arrivals"
               onClick={() => setDrawerOpen(false)}
-              className="flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:text-[#6E56CF] transition-all"
             >
               <div className="w-8 h-8 rounded-lg bg-[#EDEBFF] text-[#6E56CF] flex items-center justify-center">
                 <Sparkles size={17} strokeWidth={2.2} />
               </div>
               <span className="flex-1">New Arrivals</span>
-              <span className="text-[11px] text-[#6E56CF] font-bold">✨ Fresh</span>
+              <span className="text-[10px] bg-purple-50 text-[#6E56CF] border border-purple-100 font-bold px-2 py-0.5 rounded-full">
+                ✨ Fresh Stock
+              </span>
             </Link>
 
-            {/* 6. Best Sellers */}
-            <Link
-              href="/#best-sellers"
-              onClick={() => setDrawerOpen(false)}
-              className="flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63] transition-all"
-            >
-              <div className="w-8 h-8 rounded-lg bg-[#FDF2E9] text-[#EA580C] flex items-center justify-center">
-                <Heart size={17} strokeWidth={2.2} />
-              </div>
-              <span className="flex-1">Best Sellers</span>
-              <span className="text-[11px] text-[#EA580C] font-bold">⭐ Loved</span>
-            </Link>
-
-            {/* 7. About Us */}
+            {/* E. About Store */}
             <Link
               href="/about-us"
               onClick={() => setDrawerOpen(false)}
-              className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 pathname === '/about-us' || pathname === '/about'
-                  ? 'bg-pink-50/90 text-[#FF2E63]'
+                  ? 'bg-pink-50 text-[#FF2E63]'
                   : 'text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63]'
               }`}
             >
@@ -570,85 +656,57 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
               <span className="flex-1">About Store</span>
             </Link>
 
-            {/* 8. Contact Us */}
+            {/* F. Contact & Visit Us */}
             <Link
               href="/contact"
               onClick={() => setDrawerOpen(false)}
-              className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 pathname === '/contact' || pathname === '/contact-us'
-                  ? 'bg-pink-50/90 text-[#FF2E63]'
+                  ? 'bg-pink-50 text-[#FF2E63]'
                   : 'text-gray-800 hover:bg-gray-50 hover:text-[#FF2E63]'
               }`}
             >
               <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
                 <Phone size={17} strokeWidth={2.2} />
               </div>
-              <span className="flex-1">Contact Us</span>
+              <span className="flex-1">Contact &amp; Visit Us</span>
             </Link>
           </nav>
 
-          {/* SOCIAL ACTIONS IN DRAWER */}
-          <div className="pt-2 grid grid-cols-2 gap-2">
-            <a
-              href={BUSINESS_INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="py-2.5 px-3 rounded-xl bg-pink-50 text-pink-600 border border-pink-100 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs hover:bg-pink-100 transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M14.12 6H25.88C30.36 6 34 9.64 34 14.12V25.88C34 28.0336 33.1445 30.0989 31.6217 31.6217C30.0989 33.1445 28.0336 34 25.88 34H14.12C9.64 34 6 30.36 6 25.88V14.12C6 11.9664 6.8555 9.90109 8.37829 8.37829C9.90109 6.8555 11.9664 6 14.12 6ZM13.84 8.8C12.5033 8.8 11.2214 9.331 10.2762 10.2762C9.331 11.2214 8.8 12.5033 8.8 13.84V26.16C8.8 28.946 11.054 31.2 13.84 31.2H26.16C27.4967 31.2 28.7786 30.669 29.7238 29.7238C30.669 28.7786 31.2 27.4967 31.2 26.16V13.84C31.2 11.054 28.946 8.8 26.16 8.8H13.84ZM27.35 10.9C27.8141 10.9 28.2593 11.0844 28.5874 11.4126C28.9156 11.7408 29.1 12.1859 29.1 12.65C29.1 13.1141 28.9156 13.5592 28.5874 13.8874C28.2593 14.2156 27.8141 14.4 27.35 14.4C26.8859 14.4 26.4408 14.2156 26.1126 13.8874C25.7844 13.5592 25.6 13.1141 25.6 12.65C25.6 12.1859 25.7844 11.7408 26.1126 11.4126C26.4408 11.0844 26.8859 10.9 27.35 10.9ZM20 13C21.8565 13 23.637 13.7375 24.9497 15.0503C26.2625 16.363 27 18.1435 27 20C27 21.8565 26.2625 23.637 24.9497 24.9497C23.637 26.2625 21.8565 27 20 27C18.1435 27 16.363 26.2625 15.0503 24.9497C13.7375 23.637 13 21.8565 13 20C13 18.1435 13.7375 16.363 15.0503 15.0503C16.363 13.7375 18.1435 13 20 13ZM20 15.8C18.8861 15.8 17.8178 16.2425 17.0302 17.0302C16.2425 17.8178 15.8 18.8861 15.8 20C15.8 21.1139 16.2425 22.1822 17.0302 22.9698C17.8178 23.7575 18.8861 24.2 20 24.2C21.1139 24.2 22.1822 23.7575 22.9698 22.9698C23.7575 22.1822 24.2 21.1139 24.2 20C24.2 18.8861 23.7575 17.8178 22.9698 17.0302C22.1822 16.2425 21.1139 15.8 20 15.8Z"
-                  fill="currentColor"
-                />
-              </svg>
-              <span>Instagram</span>
-            </a>
-
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="py-2.5 px-3 rounded-xl bg-green-50 text-[#25D366] border border-green-100 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs hover:bg-green-100 transition-colors"
-            >
-              <MessageCircle size={16} fill="currentColor" />
-              <span>WhatsApp</span>
-            </a>
-          </div>
-
-          {/* FULL WHATSAPP ENQUIRY BUTTON */}
+          {/* 4. DIRECT WHATSAPP CONCIERGE BUTTON */}
           <div>
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-[#25D366] hover:bg-[#20bd5a] active:scale-98 text-white text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer min-h-[44px]"
+              className="w-full bg-[#25D366] hover:bg-[#20bd5a] active:scale-98 text-white text-xs sm:text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer min-h-[44px]"
             >
-              <MessageCircle size={18} fill="currentColor" />
-              <span>Direct WhatsApp Enquiry</span>
+              <WhatsAppBrandIcon size={18} className="text-white" />
+              <span>Direct WhatsApp Concierge</span>
             </a>
           </div>
 
-          {/* STORE CONTACT INFO SNIPPET */}
-          <div className="bg-gray-50 rounded-2xl p-3.5 border border-gray-100 space-y-2 text-xs text-gray-600">
+          {/* 5. STORE INFO SNIPPET */}
+          <div className="bg-gray-50 rounded-2xl p-3 border border-gray-100 space-y-1.5 text-[11px] text-gray-600">
             <div className="flex items-start gap-2">
-              <MapPin size={14} className="text-[#FF2E63] shrink-0 mt-0.5" />
-              <span className="leading-snug">
+              <MapPin size={13} className="text-[#FF2E63] shrink-0 mt-0.5" />
+              <span className="leading-tight">
                 160, Perundurai Road, Near Sudha Hospital, Erode - 638011
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock size={14} className="text-[#FF2E63] shrink-0" />
+              <Clock size={13} className="text-[#FF2E63] shrink-0" />
               <span>Open 7 Days: 9:30 AM – 9:00 PM</span>
             </div>
             <div className="flex items-center gap-2">
-              <Phone size={14} className="text-[#FF2E63] shrink-0" />
+              <Phone size={13} className="text-[#FF2E63] shrink-0" />
               <span className="font-semibold text-gray-800">{BUSINESS_PHONE_DISPLAY}</span>
             </div>
           </div>
         </div>
 
         {/* DRAWER FOOTER */}
-        <div className="shrink-0 p-4 bg-gray-50 border-t border-gray-100 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
+        <div className="shrink-0 p-3.5 bg-gray-50 border-t border-gray-100 pb-[max(0.85rem,env(safe-area-inset-bottom))] text-center">
           <p className="text-[11px] font-bold text-gray-800 font-roboto-slab">
             Baby&apos;s Bazaar &bull; Erode
           </p>
@@ -674,7 +732,7 @@ export default function Navbar({ whatsappNumber }: NavbarProps) {
           right: 'max(1.25rem, calc(env(safe-area-inset-right, 0px) + 0.75rem))',
         }}
       >
-        <MessageCircle size={26} fill="currentColor" />
+        <WhatsAppBrandIcon size={26} className="text-white" />
         <span className="sr-only">WhatsApp Chat</span>
       </a>
     </>
